@@ -1,0 +1,39 @@
+/*
+A couple of usages of logic operators, i.e. 'and' and 'or'.
+*/
+
+function log(x) {
+	#{
+		load_arg :0
+		sp_log
+	}
+}
+
+function b1() {
+	log("b1");
+	return true;
+}
+
+function b2() {
+	log("b2");
+	return false;
+}
+
+function b3() {
+	log("b3");
+	return true;
+}
+
+/*
+if(b1() || b2())
+	log(1);
+*/
+
+/*
+if(b1() && b2())
+	log(1);
+*/
+
+
+if(b1() && b2() || b3())
+	log(1);

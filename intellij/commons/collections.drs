@@ -1,0 +1,146 @@
+/*
+Collections library
+*/
+
+Iterable = #{}
+Iterable@each => |block| (
+	var it = iterator
+	while' not: it.atEnd,
+		block.call: it.next
+)
+Iterable@where => |predicate| Generatable.on' |generator|
+	each' |next| (
+		if' predicate.call: next, 
+			generator.put: next
+	)
+Iterable@map => |block| Generatable.on' |generator|
+	each' (
+		var mapped = block.call: \next
+		generator.put: mapped
+	)
+
+
+Generator = #{
+	on => |block| (
+		var generator = #{
+			current = null
+			producer = null
+			mover = null
+			gotNext = false
+			moveNext => (
+				gotNext = false
+				mover = frame
+				producer.resume: null
+			)
+			close => (
+				gotNext = false
+				mover.resume: null
+			)
+			atEnd => not: gotNext
+			put => (
+				current = \item
+				gotNext = true
+				producer = frame.sender
+				mover.resume: null
+			)
+			next => (
+				var previous = current
+				moveNext
+				return: previous
+			)
+		}
+		
+		generator@mover = frame
+		{
+			block.call: generator
+			generator.close
+		}.call
+
+		return: generator
+	)
+}
+
+Generatable = #Iterable{
+	on => #{
+		block = \block
+		iterator => (Generator.on: block)
+	}
+}
+
+newArray => newArray: \length
+
+Array@prototype ^= Iterable
+Array@[] => arraySet: this, \index, \value
+Array@[] => arrayGet: this, \index
+Array@length => arrayLength: this
+Array@iterator => Generator.on' |generator| (
+	var i = 0
+	while' i < length, (
+		var item = this[i]
+		generator.put: item
+		i = i + 1
+	)
+)
+
+
+
+Integer@to => |end| Generatable.on' |generator| (
+	var i = this
+	while' i < end, (
+		generator.put: i
+		i = i + 1
+	)
+)
+Integer@through => to: \end + 1
+
+/*
+// Implicit inheritance based on protocol?
+
+Iterable = extend(["iterable"]);
+
+Iterable.where = function(predicate) {
+	for(var x in this) {
+		if(predicate(x))
+			yield x;
+	}
+}
+*/
+
+List = #Iterable{
+	defaultCapacity = 12
+	items size
+	new => #{
+		items = newArray: defaultCapacity
+		size = 0
+	}
+	add => (
+		items[size] = \item
+		size = size + 1
+	)
+	removeAt => (
+		/*
+		Should be replaced by something like the following (hard-coded macro):
+		
+		from: 1 To: size - 1 Do' items[\i] = items[\i + 1]
+		
+		*/
+		
+		var i = \index
+		while' i < (size - 1), (
+			items[i] = items[i + 1]
+			i = i + 1
+		)
+		items[i] = null
+		size = size - 1
+	)
+	iterator => Generator.on' |generator| (
+		var i = 0
+		while' i < size, (
+			var item = items[i]
+			generator.put: item
+			i = i + 1
+		)
+	)
+	[] => items[\index] = \value
+	[] => items[\index]
+}

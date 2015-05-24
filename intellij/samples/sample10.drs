@@ -1,0 +1,28 @@
+/*
+A couple of usages of magnitude operators, i.e. ==, !=, <, >, and the like.
+*/
+
+function log(x) {
+	#{
+		load_arg :0
+		sp_log
+	}
+}
+
+function n1() {
+	log("n1");
+	return 1;
+}
+
+function n2() {
+	log("n2");
+	return 2;
+}
+
+function n3() {
+	log("n3");
+	return 2;
+}
+
+if(n1() == n2() == n3())
+	log("Yay");

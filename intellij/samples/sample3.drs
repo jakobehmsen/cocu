@@ -1,0 +1,69 @@
+function log2(x) {
+	#{
+		load_arg :0
+		sp_log
+	}
+}
+
+log2(25);
+
+/*
+var x = 8 / 4;
+log(x);
+log(x + x);
+*/
+
+/*
+function sq(x) {
+	return x * x;
+}
+
+var sqFive = sq(7);
+log(sqFive);
+
+pause;
+
+sqFive = sq(sqFive);
+log(sqFive);
+*/
+
+
+/*
+function log(x) {
+	#{
+		load_arg :0
+		special_log
+	}
+	
+	return x;
+}
+
+log(5);
+*/
+
+/*
+function log(x) {
+	
+	#{
+		load_arg :0
+		special_log
+	}
+}
+
+var x = 10;
+log(x);
+pause;
+x = 20;
+log(x);
+*/
+
+/*
+var x = 10;
+pause;
+console.log(x);
+*/
+
+/*
+var x = 15;
+var y = x;
+*/

@@ -1,0 +1,86 @@
+/*
+A couple of usages of if-else statements
+*/
+
+function log(x) {
+	#{
+		load_arg :0
+		sp_log
+	}
+}
+
+/*
+log(25);
+pause;
+log(36);
+*/
+
+/*
+var t = true;
+var f = false;
+
+log(t);
+log(f);
+*/
+
+/*
+var t = true;
+//var t = false;
+
+if(t) {
+	log(1);
+} else {
+	log(0);
+}
+*/
+
+/*
+var t1 = true;
+//var t1 = false;
+
+if(t1) {
+	//var t2 = true;
+	var t2 = false;
+	
+	log(117);
+	pause;
+	
+	if(t2) {
+		log(2);
+	} else {
+		log(1);
+	}
+} else {
+	log(0);
+}
+*/
+
+/*
+var t1 = false;
+var t2 = true;
+
+if(t1) {
+	log(1);
+} else if(t2) {
+	log(2);
+}
+*/
+
+/*
+if(false)
+	if(false)
+		log(1);
+	else
+		log(2);
+else
+	if(false)
+		log(3);
+	else
+		log(4);
+*/
+
+if(true)
+	if(false)
+		log(1);
+	else
+		log(2);

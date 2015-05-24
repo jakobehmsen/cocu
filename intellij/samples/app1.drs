@@ -1,0 +1,51 @@
+/*
+Simple property catalog application.
+
+A console application that can set, get and list properties and pause the application.
+*/
+
+function load(path) {
+	# {
+		load_arg :0
+		sp_load
+		ret :1
+	}
+}
+
+load("std");
+
+var properties = {};
+
+while(true) {
+	writeln("What do you want to do?");
+	var command = readln();
+	
+	if(command == "set") {
+		writeln("Enter property name: ");
+		var name = readln();
+		writeln("Enter property value: ");
+		var value = readln();
+		
+		properties[name] = value;
+		
+		writeln("Property " + name + " was set to " + value + ".");
+	} else if(command == "get") {
+		writeln("Enter property name: ");
+		var name = readln();
+		
+		var value = properties[name];
+		writeln(value);
+	} else if(command == "pause") {
+		writeln("Bye bye then.");
+		pause;
+		writeln("Welcome back.");
+	} else if(command == "list") {
+		// ***Currently non-functional***
+		// Could probably be fixed by having an instruction for creating an iterable of
+		// name/value pairs of a dictionary process
+		for(name in properties)
+		    writeln(name + " = " + properties[name] + " ");
+	} else {
+		writeln("Valid commands are 'set', 'get', 'list' or 'pause'.");
+	}
+}

@@ -1,0 +1,62 @@
+MenuContainer = #[
+	with => #[
+		description = \description
+		items = \items
+		select => #[
+			perform => 0.to: items.size; each: {
+				var item = items[\i]
+				writeln: "" + \index + ": " + \item@description
+			}
+			replace => |ancestry| (
+				var selection = readln.parseInt
+				var item = items[selection]
+				
+				var itemSelect = item.select
+				itemSelect.select
+				return: itemSelect.decide: #[outer = ancestry menu = this]
+			)
+		]
+	]
+]
+MenuAction = #[
+	for => #[
+		description = \description
+		action = \actionBlock
+		select => #[
+			perform => action.call
+			replace => \ancestry@outer
+		]
+	]
+]
+MenuActionUp = #[
+	for => #[
+		description = "Up"
+		select => #[
+			perform => null
+			replace => \ancestry@outer@outer
+		]
+	]
+]
+MenuActionQuit = #[
+	for => #[
+		description = "Quit"
+		select => #[
+			perform => null
+			replace => null
+		]
+	]
+]
+
+presentMenu => (
+	var ancestry = #[
+		menu = \menu
+		outer = null
+	]
+	while' ancestry != null, (
+		var selection = ancestry@menu.select
+		selection.perform
+		ancestry = selection.replace: ancestry
+	)
+)
+
+doStuff => writeln: "HOWDI THERE AGAIN!!!"

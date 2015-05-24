@@ -1,0 +1,133 @@
+/*
+Standard library
+*/
+
+Out = class: "java.lang.System" Field: "out"
+puts => (
+	on: Out Invoke: "java.io.PrintStream", "println", "java.lang.String" With: \s.toString
+)
+
+
+In = (
+	var inputStream = class: "java.lang.System" Field: "in"
+	var inputStreamStream = newInstance: "java.io.InputStreamReader", "java.io.InputStream" With: inputStream
+	newInstance: "java.io.BufferedReader", "java.io.Reader" With: inputStreamStream
+)
+
+gets => (
+	on: In Invoke: "java.io.BufferedReader", "readLine", ""
+)
+
+gets => (
+	puts: \s
+	gets
+)
+
+
+/*
+// Implicit inheritance based on protocol?
+Any = extend([]);
+Any.clone = function() {
+	#{
+		load_arg 0;
+		sp_clone;
+		ret 1;
+	}
+}
+*/
+
+Any@clone => clone: this
+Any@== => \other.equalsAny: this
+Any@equalsAny => refEqual: \lhs, this
+Any@equalsInt => |other| false
+Any@equalsString => |other| false
+Any@!= => not: this == \other
+Any@slots => #{
+	target = this
+	set => slotsSet: target, \name, \value
+	setProto => slotsSetProto: target, \name, \value
+	get => slotsGet: target, \name
+	isDefined => slotsIsDefined: target, \name
+	names => slotsNames: target
+}
+
+String@+ => stringConcat: this, \other.toString
+String@toString => this
+String@== => \other.equalsString: this
+String@equalsString => stringEqual: \lhs, this
+
+Integer@+ => intAdd: this, \other
+Integer@- => intSub: this, \other
+Integer@* => intMult: this, \other
+Integer@/ => intDiv: this, \other
+Integer@% => intRem: this, \other
+Integer@toString => intToString: this
+Integer@isEven => this % 2 == 0
+Integer@isOdd => not: isEven
+
+/*
+Add definition of greater/less operator here for Integer prototype
+*/
+
+// Should do double dispatching
+Integer@> => intGreater: this, \other
+// Should do double dispatching
+Integer@>= => if' intGreater: this, \other, true Else' intEqual: this, \other
+// Should do double dispatching
+Integer@< => intLess: this, \other
+// Should do double dispatching
+Integer@<= => if' intLess: this, \other, true Else' intEqual: this, \other
+Integer@== => \other.equalsInt: this
+Integer@equalsInt => intEqual: \lhs, this
+
+Frame@sender => frameSender: this
+Frame@setSender => frameSetSender: this, \newSender
+Frame@resume => frameResume: this, \x
+
+Closure@call => eval: this
+Closure@call => eval: this With: \arg0
+Closure@call => eval: this With: \arg0 With: \arg1
+Closure@call => eval: this With: \arg0 With: \arg1 With: \arg2
+Closure@call => eval: this With: \arg0 With: \arg1 With: \arg2 With: \arg3
+
+True@toString => "True"
+True@&& => \other
+True@|| => |other| true
+False@toString => "False"
+False@&& => |other| false
+False@|| => \other
+
+Null@toString => "Null"
+
+/*
+Exception handling
+*/
+
+Frame@nearestWithHandler =>
+	if' (isSet: this, "handler"), this Else' (
+		var theSender = sender
+		if' theSender != null, theSender.nearestWithHandler Else' null
+	)
+Frame@signal => |signal| (
+	var nearest = nearestWithHandler
+	if' nearest != null, (
+		nearest@handler.call: signal, nearest
+	) Else'
+		puts: "Uncaught error: " + signal@message
+)
+Handler = {|aNativeSignal aFrame|
+	var message = on: aNativeSignal Invoke: "java.lang.Exception", "getMessage", ""
+	aFrame.signal: #{message = message}
+}
+doHandle => |anAttempt aHandler| (
+	frame@handler = \aHandler
+	\anAttempt.call
+)
+
+/*
+Envelope behavior
+*/
+Envelope@reply => envelopeReply: this, \reply
+Envelope@receiver => envelopeReceiver: this
+Envelope@sender => envelopeSender: this
+Envelope@message => envelopeMessage: this

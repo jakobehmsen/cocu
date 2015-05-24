@@ -1,0 +1,25 @@
+/*
+A couple of usages of property setting and getting
+Properties of this and variables are seperate.
+*/
+
+function log(x) {
+	#{
+		load_arg :0
+		sp_log
+	}
+}
+
+this["x"] = "str1";
+
+log(this["x"]);
+
+pause;
+
+this["x"] = "str2";
+
+log(this["x"]);
+
+pause;
+
+log(this["x"]);

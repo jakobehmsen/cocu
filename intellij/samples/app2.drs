@@ -1,0 +1,68 @@
+/*
+Simple ? application.
+
+A console application that ?.
+*/
+
+function load(path) {
+	return §sp_load(path);
+}
+
+load("std");
+load("collections");
+
+var persons = List.clone();
+
+while(true) {
+	$PrintWhatToDo
+	writeln("What do you want to do?");
+	var command = $ReadWhatToDo readln();
+	
+	if(command == "new") {
+		$PrintEnterNewName
+		writeln("Enter name: ");
+		var name = $PrintReadNewName readln();
+		$PrintEnterNewDoB
+		writeln("Enter dob: ");
+		var dob = $ReadEnterNewDoB readln();
+		
+		var newPerson = {
+			name: name,
+			dob: dob,
+			toString: function () {
+				return name + ", " + dob
+			}
+		};
+		
+		persons.add(newPerson);
+		
+		$PrintPersonCreated
+		writeln("" + name + " was created.");
+	} else if(command == "get") {
+		$PrintEnterNameToSearchFor
+		writeln("Enter name to search for: ");
+		var name = $ReadNameToSearchFor readln();
+		
+		for(person in persons.where({:x.name == name})) {
+			$PrintPersonMatched
+			writeln(person);
+		}
+	} else if(command == "pause") {
+		$PrintByeGreeting
+		writeln("Bye bye then.");
+		$Pause
+		pause;
+		$PrintWelcomeBack
+		writeln("Welcome back.");
+	} else if(command == "list") {
+		for(person in persons) {
+			$PrintPerson
+		    writeln(person);
+	    }
+		$PrintPersonCount
+	    writeln("All in all, " + persons.size + " person(s).");
+	} else {
+		$PrintValidCommands
+		writeln("Valid commands are 'new', 'get', 'list' or 'pause'.");
+	}
+}

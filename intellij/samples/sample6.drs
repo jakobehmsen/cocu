@@ -1,0 +1,16 @@
+/*
+A couple of usages of strings
+*/
+
+function log(x) {
+	#{
+		load_arg :0
+		sp_log
+	}
+}
+
+var str1 = "my first string";
+log(str1);
+
+var str2 = "my\nsecond\nstring";
+log(str2);
