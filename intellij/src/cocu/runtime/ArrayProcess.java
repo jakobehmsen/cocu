@@ -45,4 +45,9 @@ public class ArrayProcess extends LazyCloneProcess {
 	public void set(int index, Process value) {
 		items[index] = value;
 	}
+
+	@Override
+	public String toString() {
+		return "#" + Arrays.toString(items);
+	}
 }
