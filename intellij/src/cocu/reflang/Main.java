@@ -21,13 +21,13 @@ public class Main {
 		try {
 			inputStream = new FileInputStream(sourceCodePath);
 			cocu.reflang.Compiler compiler = new Compiler();
-			FrameInfo process = compiler.compile(inputStream, false);
+			Compilation compilation = compiler.compile(inputStream, false);
 			
-			if(compiler.hasErrors())
-				compiler.printErrors();
+			if(compilation.hasErrors())
+				compilation.printErrors();
 			else {
 				try (ObjectOutput oo = new ObjectOutputStream(new FileOutputStream(objectCodePath))) {
-			        oo.writeObject(process);
+			        oo.writeObject(compilation.frame);
 			    }
 				
 				System.out.println("Compiled '" + sourceCodePath + "' into '" + objectCodePath + "'.");

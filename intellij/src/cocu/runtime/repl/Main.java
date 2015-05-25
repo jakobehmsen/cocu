@@ -23,7 +23,8 @@ public class Main {
 
         SymbolTable symbolTable = SymbolTable.ROOT;
 
-        Processor processor = new Processor(1, 0, new Instruction[0]);
+        cocu.reflang.Compiler compiler = new cocu.reflang.Compiler();
+        Processor processor = new Processor(compiler);
         String commonsPath = "commons";
         String currentDir = new File("").getAbsolutePath();
         processor.setup(symbolTable, commonsPath, currentDir);
@@ -38,18 +39,18 @@ public class Main {
                     InputStream inputStream;
                     try {
                         inputStream = new ByteArrayInputStream(code.getBytes());
-                        cocu.reflang.Compiler compiler = new cocu.reflang.Compiler();
-                        FrameInfo process = compiler.compile(inputStream, true);
+                        //FrameInfo process = compiler.compile(inputStream, true);
+                        Compilation compilation = compiler.compile(inputStream, true);
 
-                        if(compiler.hasErrors())
-                            compiler.printErrors();
+                        if(compilation.hasErrors())
+                            compilation.printErrors();
                         else {
                             String commonsPath = "commons";
                             String currentDir = new File("").getAbsolutePath();
 
                             //Processor processor = new Processor(process.localCount, process.maxStackSize, process.instructions);
                             //processor.setup(symbolTable, commonsPath, currentDir);
-                            processor.setFrame(process.localCount, process.maxStackSize, process.instructions);
+                            processor.setFrame(compilation.frame.localCount, compilation.frame.maxStackSize, compilation.frame.instructions);
                             processor.replay(new InteractionHistory(Arrays.asList()));
 
                             cocu.runtime.Process result = processor.peekStack();

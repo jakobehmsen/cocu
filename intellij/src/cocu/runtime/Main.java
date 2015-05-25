@@ -46,7 +46,8 @@ public class Main {
 			
 			if(mainProcess != null) {
 				SymbolTable symbolTable = SymbolTable.ROOT;
-				Processor processor = new Processor(mainProcess.localCount, mainProcess.maxStackSize, mainProcess.instructions);
+				Processor processor = new Processor(compiler);
+				processor.setFrame(mainProcess.localCount, mainProcess.maxStackSize, mainProcess.instructions);
 				processor.setup(symbolTable, commonsPath, new File(mainObjectSourcePath).getParentFile().getCanonicalPath());
 	
 				long endReadMainProcess = System.currentTimeMillis();

@@ -264,8 +264,10 @@ public class Processor {
 	private DictionaryProcess protoBehavior;
 	private DictionaryProcess protoClosure;
 	private DictionaryProcess protoEnvelope;
+	private Compiler compiler;
 
-	public Processor(int localCount, int maxStackSize, Instruction[] instructions) {
+	public Processor(Compiler compiler/*, int localCount, int maxStackSize, Instruction[] instructions*/) {
+		this.compiler = compiler;
 		// TODO: Consider: Should the Any prototype be this? Should CustomProcess be a DictionaryProcess?
 		// Should CustomProcess not be a process at all? Should CustomProcess hold any and push it instead this?  - Also at other locations, e.g. when loading.
 		// Add Any prototype
@@ -316,9 +318,9 @@ public class Processor {
 		})));
 		protoAny.define(SymbolTable.Codes.Handler, handler);
 		
-		Process[] locals = new Process[localCount];
+		/*Process[] locals = new Process[localCount];
 		locals[0] = protoAny;
-		currentFrame = new Frame(null, /*protoAny, */locals, instructions, new Frame.InterfaceId(), maxStackSize);
+		currentFrame = new Frame(null, locals, instructions, new Frame.InterfaceId(), maxStackSize);*/
 	}
 
 	public Frame getFrame() {
@@ -1299,7 +1301,7 @@ public class Processor {
 					codePath = commonsPath + "/" + path + ".drr";
 				}
 				
-				Compiler compiler = new Compiler();
+				//Compiler compiler = new Compiler();
 				FrameInfo processFrame = compiler.load(sourcePath, codePath);
 				// Assumed to end with finish instruction. Replace finish with pop_frame.
 				processFrame.instructions[processFrame.instructions.length - 1] = new Instruction(Instruction.OPCODE_RET_NONE);
