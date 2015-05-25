@@ -26,7 +26,7 @@ public class ASTToCode implements ASTVisitor {
 	
 	@Override
 	public void visitProgram(ASTProgram ast) {
-		visit(ast.body, false);
+		visit(ast.body, mustBeExpression);//false);
 		instructions.addSingle(new Instruction(Instruction.OPCODE_FINISH));
 	}
 

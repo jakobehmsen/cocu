@@ -29,6 +29,7 @@ public class SymbolTable {
 		public static final int message = 19;
 		public static final int sender = 20;
 		public static final int Envelope = 21;
+		public static final int toString = 22;
 	}
 	
 	public static final SymbolTable ROOT = createRoot();

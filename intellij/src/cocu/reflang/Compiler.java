@@ -55,7 +55,7 @@ public class Compiler {
 		errors.printMessages();
 	}
 	
-	public FrameInfo compile(InputStream sourceCode) throws IOException, CompilationException {
+	public FrameInfo compile(InputStream sourceCode, boolean mustBeExpression) throws IOException, CompilationException {
 		CharStream charStream = new ANTLRInputStream(sourceCode);
 		CocuLexer lexer = new CocuLexer(charStream);
 		CommonTokenStream tokenStream = new CommonTokenStream(lexer);
@@ -201,7 +201,7 @@ public class Compiler {
 		// Postpone code generation from ast's till runtime?
 		// Instead, a single instruction, GENERATE with the ast as an operand, is generated?
 		CodeEmitter instructions = new CodeEmitter();
-		ASTToCode programAstToCode = new ASTToCode(primitiveMap, instructions, false);
+		ASTToCode programAstToCode = new ASTToCode(primitiveMap, instructions, mustBeExpression);
 		programAst.accept(programAstToCode);
 		
 		long endGen = System.currentTimeMillis();
@@ -211,7 +211,10 @@ public class Compiler {
 		CodeEmission code = instructions.generate();
 		
 		int localCount = 1 + idToParameterOrdinalMap.size() + idToVariableOrdinalMap.size();
-		return new FrameInfo(localCount, code.getMaxStackSize(), code.toArray(new Instruction[code.size()]));
+		Instruction[] instructionArray = code.toArray(new Instruction[code.size()]);
+		//if(mustBeExpression)
+		//	instructionArray[instructionArray.length - 1] = new Instruction(Instruction.OPCODE_RET);
+		return new FrameInfo(localCount, code.getMaxStackSize(), instructionArray);
 	}
 	
 	public FrameInfo load(String sourcePath, String codePath) throws FileNotFoundException, IOException, ClassNotFoundException, CompilationException {
@@ -243,7 +246,7 @@ public class Compiler {
 			FileInputStream inputStream;
 			try {
 				inputStream = new FileInputStream(sourcePath);
-				process = compile(inputStream);
+				process = compile(inputStream, false);
 				
 				if(hasErrors()) {
 					System.err.println("Errors were found during compilation of '" + sourcePath + "':");
@@ -276,7 +279,7 @@ public class Compiler {
 		try {
 			for(int i = 0; i < 10; i++)
 				try {
-					compiler.compile(new ByteArrayInputStream(testSource.getBytes("UTF-8")));
+					compiler.compile(new ByteArrayInputStream(testSource.getBytes("UTF-8")), false);
 				} catch (CompilationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

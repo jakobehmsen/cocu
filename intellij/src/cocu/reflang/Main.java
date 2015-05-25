@@ -21,7 +21,7 @@ public class Main {
 		try {
 			inputStream = new FileInputStream(sourceCodePath);
 			cocu.reflang.Compiler compiler = new Compiler();
-			FrameInfo process = compiler.compile(inputStream);
+			FrameInfo process = compiler.compile(inputStream, false);
 			
 			if(compiler.hasErrors())
 				compiler.printErrors();

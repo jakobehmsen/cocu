@@ -21,8 +21,13 @@ public class StringProcess extends BuiltinProcess implements NativeInteroperable
 	public Object toSerializable() {
 		return str;
 	}
-	
-//	@Override
+
+	@Override
+	public String toString() {
+		return str;
+	}
+
+	//	@Override
 //	public DictionaryProcess newBase() {
 //		return new StringProcess(str);
 //	}

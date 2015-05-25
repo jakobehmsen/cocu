@@ -46,7 +46,7 @@ public class Processor {
 	};
 
 	public static class Frame implements Serializable {
-		private static class InterfaceId implements Serializable {
+		public static class InterfaceId implements Serializable {
 			/**
 			 * 
 			 */
@@ -320,6 +320,16 @@ public class Processor {
 		locals[0] = protoAny;
 		currentFrame = new Frame(null, /*protoAny, */locals, instructions, new Frame.InterfaceId(), maxStackSize);
 	}
+
+	public Frame getFrame() {
+		return currentFrame;
+	}
+
+	public void setFrame(int localCount, int maxStackSize, Instruction[] instructions) {
+		Process[] locals = new Process[localCount];
+		locals[0] = protoAny;
+		currentFrame = new Frame(null, /*protoAny, */locals, instructions, new Frame.InterfaceId(), maxStackSize);
+	}
 	
 	private transient SymbolTable symbolTable;
 	private transient String commonsPath;
@@ -333,6 +343,7 @@ public class Processor {
 
 	@SuppressWarnings("unused")
 	public void replay(InteractionHistory interactionHistory) {
+		stopRequested = false;
 		Debug.println(Debug.LEVEL_HIGH, "replay");
 
 		while(true) {
@@ -387,6 +398,10 @@ public class Processor {
 		
 		Debug.println(Debug.LEVEL_HIGH, "/replay");
 	}
+
+	public Process peekStack() {
+		return currentFrame.peek();
+	}
 	
 //	private final void signal(Process signal, FrameProcess frame) {
 //		Frame nearestFrameWithHandler = frame.frame.getNearestFrameWithHandler();
@@ -428,7 +443,7 @@ public class Processor {
 				Debug.println(Debug.LEVEL_LOW, "stack isn't empty: " + currentFrame.stackToString());
 			
 			stopRequested = true;
-			currentFrame = null;
+			//currentFrame = null;
 			
 			break;
 		} case Instruction.OPCODE_DUP: {
