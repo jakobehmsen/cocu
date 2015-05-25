@@ -32,7 +32,7 @@ public class Main {
         pendingScript.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if(e.isControlDown() && e.getKeyCode() == KeyEvent.VK_ENTER) {
+                if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_ENTER) {
                     String code = pendingScript.getText();
 
                     String output = code + "\n=>\n";
@@ -42,7 +42,7 @@ public class Main {
                         //FrameInfo process = compiler.compile(inputStream, true);
                         Compilation compilation = compiler.compile(inputStream, true);
 
-                        if(compilation.hasErrors())
+                        if (compilation.hasErrors())
                             compilation.printErrors();
                         else {
                             String commonsPath = "commons";
@@ -95,5 +95,9 @@ public class Main {
         frame.setSize(1028, 768);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+
+        new Thread(() -> {
+            compiler.warmup();
+        }).run();
     }
 }

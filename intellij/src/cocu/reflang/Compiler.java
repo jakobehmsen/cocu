@@ -276,7 +276,7 @@ public class Compiler {
 		return process;
 	}
 
-	public static void warmup() {
+	public void warmup() {
 		String testSource = 
 			"var x = 0\n" + 
 			"var c = {if' true, true Else: false}\n" + 
