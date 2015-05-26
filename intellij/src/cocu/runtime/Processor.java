@@ -317,10 +317,6 @@ public class Processor {
 			new Instruction(Instruction.OPCODE_RET)
 		})));
 		protoAny.define(SymbolTable.Codes.Handler, handler);
-		
-		/*Process[] locals = new Process[localCount];
-		locals[0] = protoAny;
-		currentFrame = new Frame(null, locals, instructions, new Frame.InterfaceId(), maxStackSize);*/
 	}
 
 	public Frame getFrame() {
@@ -344,9 +340,9 @@ public class Processor {
 	}
 
 	@SuppressWarnings("unused")
-	public void replay(InteractionHistory interactionHistory) {
+	public void process() {
 		stopRequested = false;
-		Debug.println(Debug.LEVEL_HIGH, "replay");
+		Debug.println(Debug.LEVEL_HIGH, "process");
 
 		while(true) {
 			try {
@@ -359,7 +355,7 @@ public class Processor {
 							Debug.println(Debug.LEVEL_HIGH, "play: " + instruction);
 						}
 						
-						next(instruction, interactionHistory);
+						next(instruction);
 					}
 					break;
 				}
@@ -398,7 +394,7 @@ public class Processor {
 		if(currentFrame != null)
 			Debug.println(Debug.LEVEL_HIGH, "stack: " + currentFrame.stackToString());
 		
-		Debug.println(Debug.LEVEL_HIGH, "/replay");
+		Debug.println(Debug.LEVEL_HIGH, "/process");
 	}
 
 	public Process peekStack() {
@@ -420,23 +416,9 @@ public class Processor {
 	
 	private boolean stopRequested;
 	
-	private final void next(Instruction instruction, InteractionHistory interactionHistory) {
+	private final void next(Instruction instruction) {
 		switch(instruction.opcode) {
-		case Instruction.OPCODE_PAUSE: {
-			if(currentFrame.shouldMemorize()) {
-				Object output = interactionHistory.nextOutputFor(currentFrame.getInterfaceId(), Instruction.OPCODE_PAUSE);
-				if(output == null) {
-					stopRequested = true;
-					interactionHistory.append(currentFrame.getInterfaceId(), instruction, singletonTrue.toSerializable());
-				} else {
-				}
-			} else {
-				throw new RuntimeException("Can only pause in memorize states.");
-			}
-			currentFrame.instructionPointer++;
-			
-			break;
-		} case Instruction.OPCODE_INC_IP: {
+		case Instruction.OPCODE_INC_IP: {
 			currentFrame.instructionPointer++;
 			
 			break;
@@ -906,48 +888,6 @@ public class Processor {
 			currentFrame.copyNInto(closure.argumentOffset, frame.locals, 3, 1);
 			currentFrame.pop4();
 			currentFrame = new Frame(currentFrame, frame.locals, behavior.frameInfo.instructions, frame.interfaceId, behavior.frameInfo.maxStackSize);
-			
-			break;
-		} case Instruction.OPCODE_EXTEND_INTER_ID: {
-			String id = (String)instruction.operand1;
-			currentFrame.extendInterfaceId(id);
-			if(currentFrame.shouldMemorize()) {
-				// What if the interface id is not an expression? Just jump?
-				
-				// Try to read memorized value
-				Object memorization = interactionHistory.nextOutputFor(currentFrame.getInterfaceId(), -1);
-				if(memorization != null) {
-					Process memorizationAsProcess;
-					if(memorization instanceof String)
-						memorizationAsProcess = new StringProcess(protoString, (String)memorization);
-					else if(memorization instanceof Integer)
-						memorizationAsProcess = new IntegerProcess(protoInteger, (int)memorization);
-					else if(memorization instanceof Boolean)
-						memorizationAsProcess = getBoolean((boolean)memorization);
-					else if(memorization instanceof NilProcess.Serialization) {
-						memorizationAsProcess = singletonNil;
-					} else {
-						throw new RuntimeException("Could not deserialize: " + memorization);
-					}
-					
-					// If a memorized value could be found, push it, jump, and shrink
-					currentFrame.push(memorizationAsProcess);
-					int shrinkPairJump = (int)instruction.operand2;
-					currentFrame.instructionPointer += shrinkPairJump;
-					currentFrame.shrinkInterfaceId();
-				}
-			}
-			currentFrame.instructionPointer++;
-			
-			break;
-		} case Instruction.OPCODE_SHRINK_INTER_ID: {
-			if(currentFrame.shouldMemorize()) {
-				Process toMemorize = currentFrame.peek();
-				Object toMemorizeSerialized = toMemorize.toSerializable();
-				interactionHistory.append(currentFrame.getInterfaceId(), null, toMemorizeSerialized);
-			}
-			currentFrame.shrinkInterfaceId();
-			currentFrame.instructionPointer++;
 			
 			break;
 		} case Instruction.OPCODE_LOAD_THIS: {
@@ -1551,30 +1491,6 @@ public class Processor {
 
 	private Process wrapNativeObject(Object nativeObject) {
 		return nativeObject != null ? new NativeObjectHolder(nativeObject) : singletonNil;
-	}
-
-	public void resume(List<InteractionHistory.Interaction> playedInstructions) {
-		InteractionHistory interactionHistory = new InteractionHistory(playedInstructions);
-		Debug.println(Debug.LEVEL_HIGH, "play");
-		
-		if(currentFrame != null) {
-			while(!stopRequested) {
-				Instruction instruction = currentFrame.instructions[currentFrame.instructionPointer];
-				
-				Debug.println(Debug.LEVEL_HIGH, "stack: " + currentFrame.stackToString());
-				Debug.println(Debug.LEVEL_HIGH, "play: " + instruction);
-				
-				next(instruction, interactionHistory);
-			}
-		}
-
-		if(currentFrame != null && currentFrame.stackSize() > 0)
-			Debug.println(Debug.LEVEL_LOW, "stack isn't empty: " + currentFrame.stackToString());
-		
-		if(currentFrame != null)
-			Debug.println(Debug.LEVEL_HIGH, "stack: " + currentFrame.stackToString());
-
-		Debug.println(Debug.LEVEL_HIGH, "/play");
 	}
 	
 	public final BooleanProcess getBoolean(boolean value) {

@@ -9,7 +9,7 @@ public abstract class Process implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public abstract void resume(List<InteractionHistory.Interaction> playedInstructions);
+	//public abstract void resume(List<InteractionHistory.Interaction> playedInstructions);
 
 	public abstract Object getCallable(Processor processor, int selectorCode, int arity);
 

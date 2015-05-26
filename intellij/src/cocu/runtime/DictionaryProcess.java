@@ -11,11 +11,6 @@ public class DictionaryProcess extends LocalizableProcess {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	@Override
-	public void resume(List<InteractionHistory.Interaction> playedInstructions) {
-		// Does is make sense to have this method here?
-	}
 	
 	private static class Member implements Serializable {
 		/**

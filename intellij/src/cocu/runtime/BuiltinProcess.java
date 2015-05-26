@@ -1,9 +1,5 @@
 package cocu.runtime;
 
-import java.util.List;
-
-import cocu.runtime.InteractionHistory.Interaction;
-
 public class BuiltinProcess extends Process {
 	/**
 	 * 
@@ -14,12 +10,6 @@ public class BuiltinProcess extends Process {
 
 	public BuiltinProcess(Process prototype) {
 		this.prototype = prototype;
-	}
-
-	@Override
-	public void resume(List<Interaction> playedInstructions) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

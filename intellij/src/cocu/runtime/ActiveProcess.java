@@ -1,9 +1,5 @@
 package cocu.runtime;
 
-import java.util.List;
-
-import cocu.runtime.InteractionHistory.Interaction;
-
 public class ActiveProcess extends Process {
 	/**
 	 * 
@@ -50,12 +46,6 @@ public class ActiveProcess extends Process {
 	public String[] getNames() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public void resume(List<Interaction> playedInstructions) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	@Override

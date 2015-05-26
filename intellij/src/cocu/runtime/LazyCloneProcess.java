@@ -1,9 +1,5 @@
 package cocu.runtime;
 
-import java.util.List;
-
-import cocu.runtime.InteractionHistory.Interaction;
-
 public class LazyCloneProcess extends Process {
 	/**
 	 * 
@@ -13,12 +9,6 @@ public class LazyCloneProcess extends Process {
 
 	public LazyCloneProcess(LocalizableProcess protoOrInstance) {
 		this.protoOrInstance = protoOrInstance;
-	}
-
-	@Override
-	public void resume(List<Interaction> playedInstructions) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

@@ -1,9 +1,5 @@
 package cocu.runtime;
 
-import java.util.List;
-
-import cocu.runtime.InteractionHistory.Interaction;
-
 public class NativeObjectHolder extends Process implements NativeInteroperable {
 	/**
 	 * 
@@ -14,9 +10,6 @@ public class NativeObjectHolder extends Process implements NativeInteroperable {
 	public NativeObjectHolder(Object nativeObject) {
 		this.nativeObject = nativeObject;
 	}
-
-	@Override
-	public void resume(List<Interaction> playedInstructions) { }
 
 	@Override
 	public Object getCallable(Processor processor, int selectorCode, int arity) {

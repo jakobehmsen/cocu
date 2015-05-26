@@ -2,13 +2,11 @@ package cocu.runtime;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import cocu.debugging.Debug;
 import cocu.reflang.CompilationException;
 import cocu.reflang.Compiler;
 import cocu.reflang.SymbolTable;
-import cocu.transcriber.Journal;
 
 public class Main {
 	public static void main(String[] args) {
@@ -56,30 +54,17 @@ public class Main {
 	
 				Debug.println(Debug.LEVEL_MEDIUM, "Reading interaction history...");
 				long startReadInteractionHistory = System.currentTimeMillis();
-				Journal<InteractionHistory.Interaction> journal = Journal.read(mainObjectCodeJournalPath);
-				List<InteractionHistory.Interaction> commands = journal.getCommands();
 				long endReadInteractionHistory = System.currentTimeMillis();
-				
-				InteractionHistory interactionHistory = new InteractionHistory(commands);
+
 				Debug.println(Debug.LEVEL_MEDIUM, "Read interaction history.");
 				Debug.println(Debug.LEVEL_MEDIUM, "Read interaction history time: " + (endReadInteractionHistory - startReadInteractionHistory));
 	
 				Debug.println(Debug.LEVEL_MEDIUM, "Running...");
 				long startEvaluation = System.currentTimeMillis();
-				processor.replay(interactionHistory);
+				processor.process();
 				long endEvaluation = System.currentTimeMillis();
 				Debug.println(Debug.LEVEL_MEDIUM, "Ran.");
 				Debug.println(Debug.LEVEL_MEDIUM, "Ran time: " + (endEvaluation - startEvaluation));
-				
-				Debug.println(Debug.LEVEL_MEDIUM, "Logging interactions...");
-				long startLoggingInteractions = System.currentTimeMillis();
-				if(interactionHistory.hasNewInteractions())
-					journal.log(interactionHistory.getNewInteractions());
-				
-				journal.close();
-				long endLoggingInteractions = System.currentTimeMillis();
-				Debug.println(Debug.LEVEL_MEDIUM, "Logged interactions.");
-				Debug.println(Debug.LEVEL_MEDIUM, "Logged interactions time: " + (endLoggingInteractions - startLoggingInteractions));
 			}
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();

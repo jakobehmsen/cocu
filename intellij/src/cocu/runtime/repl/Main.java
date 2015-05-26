@@ -1,9 +1,7 @@
 package cocu.runtime.repl;
 
 import cocu.reflang.*;
-import cocu.reflang.Compiler;
 import cocu.runtime.*;
-import cocu.runtime.Process;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -11,7 +9,6 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.*;
-import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) {
@@ -51,7 +48,7 @@ public class Main {
                             //Processor processor = new Processor(process.localCount, process.maxStackSize, process.instructions);
                             //processor.setup(symbolTable, commonsPath, currentDir);
                             processor.setFrame(compilation.frame.localCount, compilation.frame.maxStackSize, compilation.frame.instructions);
-                            processor.replay(new InteractionHistory(Arrays.asList()));
+                            processor.process();
 
                             cocu.runtime.Process result = processor.peekStack();
 
@@ -63,7 +60,7 @@ public class Main {
 
                             processor = new Processor(1, 1, process.instructions);
                             processor.setup(symbolTable, commonsPath, currentDir);
-                            processor.replay(new InteractionHistory(Arrays.asList()));*/
+                            processor.process(new InteractionHistory(Arrays.asList()));*/
 
                             // Send toString() message to result
                             output += result;
