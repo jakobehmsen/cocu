@@ -7,7 +7,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.List;
 
 import cocu.debugging.Debug;
 import cocu.reflang.CompilationException;
@@ -46,40 +45,6 @@ public class Processor {
 	};
 
 	public static class Frame implements Serializable {
-		public static class InterfaceId implements Serializable {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-			private int depth;
-			private String id;
-			
-			public InterfaceId() { }
-
-			private InterfaceId(int depth, String id) {
-				this.depth = depth;
-				this.id = id;
-			}
-
-			public InterfaceId extend(String id) {
-				String newId = depth == 0 ? id : this.id;
-				return new InterfaceId(depth + 1, newId);
-			}
-			
-			public InterfaceId shrink() {
-				String newId = depth == 0 ? null : this.id;
-				return new InterfaceId(depth - 1, newId);
-			}
-			
-			public String build() {
-				return id;
-			}
-			
-			public boolean shouldMemorize() {
-				return depth == 1;
-			}
-		}
-		
 		/**
 		 * 
 		 */
@@ -90,16 +55,14 @@ public class Processor {
 		public final Instruction[] instructions;
 		public int instructionPointer;
 		public FrameProcess reification; 
-		
-		public InterfaceId interfaceId;
+
 		private Process[] stack;
 		private int stackSize;
 		
-		public Frame(Frame sender, Process[] locals, Instruction[] instructions, InterfaceId interfaceId, int maxStackSize) {
+		public Frame(Frame sender, Process[] locals, Instruction[] instructions, int maxStackSize) {
 			this.sender = sender;
 			this.locals = locals;
 			this.instructions = instructions;
-			this.interfaceId = interfaceId;
 			stackSize = 0;
 			stack = new Process[maxStackSize];
 		}
@@ -109,22 +72,6 @@ public class Processor {
 				reification = new FrameProcess(protoFrame, this);
 			
 			return reification;
-		}
-		
-		public final void extendInterfaceId(String id) {
-			interfaceId = interfaceId.extend(id);
-		}
-		
-		public final void shrinkInterfaceId() {
-			interfaceId = interfaceId.shrink();
-		}
-		
-		public final boolean shouldMemorize() {
-			return interfaceId.shouldMemorize();
-		}
-		
-		public final String getInterfaceId() {
-			return interfaceId.build();
 		}
 		
 		public final Process pop() {
@@ -326,7 +273,7 @@ public class Processor {
 	public void setFrame(int localCount, int maxStackSize, Instruction[] instructions) {
 		Process[] locals = new Process[localCount];
 		locals[0] = protoAny;
-		currentFrame = new Frame(null, /*protoAny, */locals, instructions, new Frame.InterfaceId(), maxStackSize);
+		currentFrame = new Frame(null, /*protoAny, */locals, instructions, maxStackSize);
 	}
 	
 	private transient SymbolTable symbolTable;
@@ -382,7 +329,7 @@ public class Processor {
 				};
 				FrameProcess frame = currentFrame.getReifiedFrame(protoFrame);
 				currentFrame = 
-					new Frame(frame.frame, new Process[] {handler, nativeSignal, frame}, handleInstructions, frame.frame.interfaceId, 3);
+					new Frame(frame.frame, new Process[] {handler, nativeSignal, frame}, handleInstructions, 3);
 //				DictionaryProcess signal = protoAny.clone();
 //				NativeObjectHolder eHolder = new NativeObjectHolder(e);
 //				signal.define(SymbolTable.Codes.cause, eHolder);
@@ -493,7 +440,7 @@ public class Processor {
 				currentFrame.copyNInto(1, locals, argumentCount);
 				currentFrame.popN(argumentCount + 1); // Pop arguments and receiver
 				
-				currentFrame = new Frame(currentFrame, locals, behavior.frameInfo.instructions, currentFrame.interfaceId, behavior.frameInfo.maxStackSize);
+				currentFrame = new Frame(currentFrame, locals, behavior.frameInfo.instructions, behavior.frameInfo.maxStackSize);
 			} else if(callable instanceof Frame) {
 				currentFrame = (Frame)callable;
 			} else if(callable != null) {
@@ -512,7 +459,7 @@ public class Processor {
 				forwardCallInstructions[forwardCallInstructions.length - 2] = new Instruction(Instruction.OPCODE_SEND_CODE, callCode, argumentCount);
 				forwardCallInstructions[forwardCallInstructions.length - 1] = new Instruction(Instruction.OPCODE_RET);
 				
-				currentFrame = new Frame(currentFrame, locals, forwardCallInstructions, currentFrame.interfaceId, 1 + argumentCount);
+				currentFrame = new Frame(currentFrame, locals, forwardCallInstructions, 1 + argumentCount);
 			} else {
 				throw new RuntimeException("Cache-miss and absent callable for '" + symbolTable.getIdFromSymbolCode(code) + "'.");
 			}
@@ -530,7 +477,7 @@ public class Processor {
 				Process[] locals = new Process[behavior.frameInfo.localCount];
 				locals[0] = receiver;
 				
-				currentFrame = new Frame(currentFrame, locals, behavior.frameInfo.instructions, currentFrame.interfaceId, behavior.frameInfo.maxStackSize);
+				currentFrame = new Frame(currentFrame, locals, behavior.frameInfo.instructions, behavior.frameInfo.maxStackSize);
 			} else if(callable instanceof Frame) {
 				currentFrame = (Frame)callable;
 			} else if(callable != null) {
@@ -540,7 +487,7 @@ public class Processor {
 				Process process = (Process)callable;
 				locals[0] = process;
 				
-				currentFrame = new Frame(currentFrame, locals, FORWARD_CALL_INSTRUCTIONS_0, currentFrame.interfaceId, 1);
+				currentFrame = new Frame(currentFrame, locals, FORWARD_CALL_INSTRUCTIONS_0, 1);
 			} else {
 				throw new RuntimeException("Cache-miss and absent callable for '" + symbolTable.getIdFromSymbolCode(code) + "'.");
 			}
@@ -560,7 +507,7 @@ public class Processor {
 				currentFrame.copy1Into(1, locals);
 				currentFrame.pop2(); // Pop arguments and receiver
 				
-				currentFrame = new Frame(currentFrame, locals, behavior.frameInfo.instructions, currentFrame.interfaceId, behavior.frameInfo.maxStackSize);
+				currentFrame = new Frame(currentFrame, locals, behavior.frameInfo.instructions, behavior.frameInfo.maxStackSize);
 			} else if(callable instanceof Frame) {
 				currentFrame = (Frame)callable;
 			} else if(callable != null) {
@@ -572,7 +519,7 @@ public class Processor {
 				Process process = (Process)callable;
 				locals[0] = process;
 				
-				currentFrame = new Frame(currentFrame, locals, FORWARD_CALL_INSTRUCTIONS_1, currentFrame.interfaceId, 2);
+				currentFrame = new Frame(currentFrame, locals, FORWARD_CALL_INSTRUCTIONS_1, 2);
 			} else {
 				throw new RuntimeException("Cache-miss and absent callable for '" + symbolTable.getIdFromSymbolCode(code) + "'.");
 			}
@@ -592,7 +539,7 @@ public class Processor {
 				currentFrame.copy2Into(1, locals);
 				currentFrame.pop3(); // Pop arguments and receiver
 				
-				currentFrame = new Frame(currentFrame, locals, behavior.frameInfo.instructions, currentFrame.interfaceId, behavior.frameInfo.maxStackSize);
+				currentFrame = new Frame(currentFrame, locals, behavior.frameInfo.instructions, behavior.frameInfo.maxStackSize);
 			} else if(callable instanceof Frame) {
 				currentFrame = (Frame)callable;
 			} else if(callable != null) {
@@ -604,7 +551,7 @@ public class Processor {
 				Process process = (Process)callable;
 				locals[0] = process;
 				
-				currentFrame = new Frame(currentFrame, locals, FORWARD_CALL_INSTRUCTIONS_2, currentFrame.interfaceId, 3);
+				currentFrame = new Frame(currentFrame, locals, FORWARD_CALL_INSTRUCTIONS_2, 3);
 			} else {
 				throw new RuntimeException("Cache-miss and absent callable for '" + symbolTable.getIdFromSymbolCode(code) + "'.");
 			}
@@ -624,7 +571,7 @@ public class Processor {
 				currentFrame.copy3Into(1, locals);
 				currentFrame.pop4(); // Pop arguments and receiver
 				
-				currentFrame = new Frame(currentFrame, locals, behavior.frameInfo.instructions, currentFrame.interfaceId, behavior.frameInfo.maxStackSize);
+				currentFrame = new Frame(currentFrame, locals, behavior.frameInfo.instructions, behavior.frameInfo.maxStackSize);
 			} else if(callable instanceof Frame) {
 				currentFrame = (Frame)callable;
 			} else if(callable != null) {
@@ -636,7 +583,7 @@ public class Processor {
 				Process process = (Process)callable;
 				locals[0] = process;
 				
-				currentFrame = new Frame(currentFrame, locals, FORWARD_CALL_INSTRUCTIONS_3, currentFrame.interfaceId, 4);
+				currentFrame = new Frame(currentFrame, locals, FORWARD_CALL_INSTRUCTIONS_3, 4);
 			} else {
 				throw new RuntimeException("Cache-miss and absent callable for '" + symbolTable.getIdFromSymbolCode(code) + "'.");
 			}
@@ -853,14 +800,14 @@ public class Processor {
 			Frame frame = closure.frame;
 			currentFrame.copyNInto(closure.argumentOffset, frame.locals, closure.parameterCount, 1);
 			currentFrame.popN(closure.parameterCount);
-			currentFrame = new Frame(currentFrame, frame.locals, behavior.frameInfo.instructions, frame.interfaceId, behavior.frameInfo.maxStackSize);
+			currentFrame = new Frame(currentFrame, frame.locals, behavior.frameInfo.instructions, behavior.frameInfo.maxStackSize);
 			
 			break;
 		} case Instruction.OPCODE_CALL_CLOSURE_0: {
 			ClosureProcess closure = (ClosureProcess)currentFrame.pop();
 			BehaviorProcess behavior = closure.behavior;
 			Frame frame = closure.frame;
-			currentFrame = new Frame(currentFrame, frame.locals, behavior.frameInfo.instructions, frame.interfaceId, behavior.frameInfo.maxStackSize);
+			currentFrame = new Frame(currentFrame, frame.locals, behavior.frameInfo.instructions, behavior.frameInfo.maxStackSize);
 			
 			break;
 		} case Instruction.OPCODE_CALL_CLOSURE_1: {
@@ -869,7 +816,7 @@ public class Processor {
 			Frame frame = closure.frame;
 			frame.locals[closure.argumentOffset] = currentFrame.peek1();
 			currentFrame.pop2();
-			currentFrame = new Frame(currentFrame, frame.locals, behavior.frameInfo.instructions, frame.interfaceId, behavior.frameInfo.maxStackSize);
+			currentFrame = new Frame(currentFrame, frame.locals, behavior.frameInfo.instructions, behavior.frameInfo.maxStackSize);
 			
 			break;
 		} case Instruction.OPCODE_CALL_CLOSURE_2: {
@@ -878,7 +825,7 @@ public class Processor {
 			Frame frame = closure.frame;
 			currentFrame.copyNInto(closure.argumentOffset, frame.locals, 2, 1);
 			currentFrame.pop3();
-			currentFrame = new Frame(currentFrame, frame.locals, behavior.frameInfo.instructions, frame.interfaceId, behavior.frameInfo.maxStackSize);
+			currentFrame = new Frame(currentFrame, frame.locals, behavior.frameInfo.instructions, behavior.frameInfo.maxStackSize);
 			
 			break;
 		} case Instruction.OPCODE_CALL_CLOSURE_3: {
@@ -887,7 +834,7 @@ public class Processor {
 			Frame frame = closure.frame;
 			currentFrame.copyNInto(closure.argumentOffset, frame.locals, 3, 1);
 			currentFrame.pop4();
-			currentFrame = new Frame(currentFrame, frame.locals, behavior.frameInfo.instructions, frame.interfaceId, behavior.frameInfo.maxStackSize);
+			currentFrame = new Frame(currentFrame, frame.locals, behavior.frameInfo.instructions, behavior.frameInfo.maxStackSize);
 			
 			break;
 		} case Instruction.OPCODE_LOAD_THIS: {
@@ -965,7 +912,7 @@ public class Processor {
 			// Or reply null?
 			// Wait forever seems most appropriate when there processes dependent; otherwise just do return none because active process has already been returned
 			Process[] locals = new Process[body.frameInfo.localCount];
-			Frame activeProcessFrame = new Frame(currentFrame, locals, body.frameInfo.instructions, currentFrame.interfaceId, body.frameInfo.maxStackSize);
+			Frame activeProcessFrame = new Frame(currentFrame, locals, body.frameInfo.instructions, body.frameInfo.maxStackSize);
 			ActiveProcess activeProcess = new ActiveProcess(environment, activeProcessFrame);
 			locals[0] = activeProcess;
 			currentFrame.set1(activeProcess); // Return active process
@@ -1249,7 +1196,7 @@ public class Processor {
 				locals[0] = protoAny;
 //				customProcess.currentFrame.locals = new Process[]{protoAny};
 				currentFrame = new Frame(
-					currentFrame, locals, processFrame.instructions, currentFrame.interfaceId, processFrame.maxStackSize);
+					currentFrame, locals, processFrame.instructions, processFrame.maxStackSize);
 			} catch (ClassNotFoundException | IOException | CompilationException e) {
 //				e.printStackTrace();
 				throw new RuntimeException("Could not load " + path + ":\n" + e.getMessage(), e);
