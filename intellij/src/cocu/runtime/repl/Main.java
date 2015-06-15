@@ -4,19 +4,56 @@ import cocu.reflang.*;
 import cocu.runtime.*;
 
 import javax.swing.*;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.*;
 
 public class Main {
+    private static int startIndex = 0;
+
     public static void main(String[] args) {
         JFrame frame = new JFrame();
         frame.setTitle("Cocu");
 
         JTextPane pendingScript = new JTextPane();
-        JTextPane historyScript = new JTextPane();
+
+        Color bgColor = Color.BLACK;
+        Color fgColor = Color.WHITE;
+
+        String shellPrefix = "> ";
+
+        pendingScript.setDocument(new DefaultStyledDocument() {
+            @Override
+            public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
+                if (offs >= startIndex)
+                    super.insertString(offs, str, a);
+            }
+
+            @Override
+            public void remove(int offs, int len) throws BadLocationException {
+                if (offs >= startIndex)
+                    super.remove(offs, len);
+            }
+        });
+
+        try {
+            pendingScript.getDocument().insertString(0, shellPrefix, null);
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+        startIndex = pendingScript.getDocument().getLength();
+        pendingScript.setCaretPosition(startIndex);
+
+        pendingScript.setBackground(bgColor);
+        pendingScript.setForeground(fgColor);
+        pendingScript.setCaretColor(fgColor);
+        pendingScript.setSelectionColor(fgColor);
+
+        pendingScript.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
 
         SymbolTable symbolTable = SymbolTable.ROOT;
 
@@ -30,9 +67,14 @@ public class Main {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    String code = pendingScript.getText();
+                    String code = null;
+                    try {
+                        code = pendingScript.getDocument().getText(startIndex, pendingScript.getDocument().getLength() - startIndex);
+                    } catch (BadLocationException e1) {
+                        e1.printStackTrace();
+                    }
 
-                    String output = code + "\n=>\n";
+                    StringBuilder output = new StringBuilder();
                     InputStream inputStream;
                     try {
                         inputStream = new ByteArrayInputStream(code.getBytes());
@@ -63,7 +105,7 @@ public class Main {
                             processor.process(new InteractionHistory(Arrays.asList()));*/
 
                             // Send toString() message to result
-                            output += result;
+                            output.append("\n" + result);
                         }
                     } catch (IOException ex) {
                         System.err.println("Compilation failed.");
@@ -75,18 +117,18 @@ public class Main {
 
                     // Can the code be parsed? Then run it.
                     try {
-                        historyScript.getDocument().insertString(0, output + "\n", null);
+                        pendingScript.getDocument().insertString(pendingScript.getDocument().getLength(), output + "\n" + shellPrefix, null);
                     } catch (BadLocationException e1) {
                         e1.printStackTrace();
                     }
 
-                    pendingScript.setText("");
+                    startIndex = pendingScript.getDocument().getLength();
+                    pendingScript.setCaretPosition(startIndex);
                 }
             }
         });
 
-        frame.getContentPane().add(pendingScript, BorderLayout.NORTH);
-        frame.getContentPane().add(historyScript, BorderLayout.CENTER);
+        frame.getContentPane().add(new JScrollPane(pendingScript), BorderLayout.CENTER);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1028, 768);

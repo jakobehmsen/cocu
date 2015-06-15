@@ -5,7 +5,7 @@ import java.util.List;
 
 public abstract class Process implements Serializable {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
