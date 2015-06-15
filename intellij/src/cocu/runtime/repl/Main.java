@@ -11,6 +11,9 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.*;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Main {
     private static int startIndex = 0;
@@ -79,7 +82,8 @@ public class Main {
                     try {
                         inputStream = new ByteArrayInputStream(code.getBytes());
                         //FrameInfo process = compiler.compile(inputStream, true);
-                        Compilation compilation = compiler.compile(inputStream, true);
+                        Set<String> fields = Arrays.asList(processor.getAny().getNames2(symbolTable)).stream().collect(Collectors.toSet());
+                        Compilation compilation = compiler.compile(inputStream, true, fields);
 
                         if (compilation.hasErrors())
                             compilation.printErrors();

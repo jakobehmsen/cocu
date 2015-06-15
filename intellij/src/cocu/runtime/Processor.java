@@ -44,6 +44,10 @@ public class Processor {
 		new Instruction(Instruction.OPCODE_RET)
 	};
 
+	public DictionaryProcess getAny() {
+		return protoAny;
+	}
+
 	public static class Frame implements Serializable {
 		/**
 		 * 

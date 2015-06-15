@@ -125,8 +125,13 @@ public class Compiler {
 	/*public void printErrors() {
 		errors.printMessages();
 	}*/
-	
+
 	public Compilation compile(InputStream sourceCode, boolean mustBeExpression) throws IOException, CompilationException {
+		Set<String> fields = new HashSet<String>();
+		return compile(sourceCode, mustBeExpression, fields);
+	}
+	
+	public Compilation compile(InputStream sourceCode, boolean mustBeExpression, Set<String> fields) throws IOException, CompilationException {
 		MessageCollector errors = new MessageCollector();
 		CharStream charStream = new ANTLRInputStream(sourceCode);
 		CocuLexer lexer = new CocuLexer(charStream);
@@ -186,7 +191,7 @@ public class Compiler {
 		OrdinalAllocator idToVariableOrdinalMap = new OrdinalAllocator();
 		Debug.println(Debug.LEVEL_MEDIUM, "Generating program...");
 
-		Set<String> fields = new HashSet<String>();
+		//Set<String> fields = new HashSet<String>();
 		ANTLRToAST antlrProgramVisitor = new ANTLRToAST(idToParameterOrdinalMap, idToVariableOrdinalMap, errors, fields, fields);
 		ASTBuilder programAstBuilder = programCtx.accept(antlrProgramVisitor);
 		int parameterOffset = 1;

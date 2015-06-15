@@ -2,7 +2,6 @@ package cocu.runtime;
 
 import java.io.Serializable;
 import java.util.Hashtable;
-import java.util.List;
 
 import cocu.reflang.SymbolTable;
 
@@ -75,6 +74,10 @@ public class DictionaryProcess extends LocalizableProcess {
 	@Override
 	public String[] getNames() {
 		return properties.keySet().toArray(new String[properties.size()]);
+	}
+
+	public String[] getNames2(SymbolTable table) {
+		return properties.keySet().stream().map(symbolCode -> table.getIdFromSymbolCode(symbolCode).getId()).toArray(s -> new String[s]);
 	}
 
 	@Override
