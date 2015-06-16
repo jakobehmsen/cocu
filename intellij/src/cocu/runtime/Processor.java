@@ -49,6 +49,10 @@ public class Processor {
 		return protoAny;
 	}
 
+	public boolean canPopStack() {
+		return currentFrame.stackSize > 0;
+	}
+
 	public static class Frame implements Serializable {
 		/**
 		 * 
@@ -969,8 +973,8 @@ public class Processor {
 			Process value = currentFrame.peek();
 			IntegerProcess index = (IntegerProcess)currentFrame.peek1();
 			ArrayProcess array = (ArrayProcess)currentFrame.peek2();
-			currentFrame.pop3();
 			array.set(index.intValue, value);
+			currentFrame.pop3();
 			currentFrame.instructionPointer++;
 			
 			break;

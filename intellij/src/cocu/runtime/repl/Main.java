@@ -105,7 +105,7 @@ public class Main {
                         Compilation compilation = compiler.compile(inputStream, true, fields);
 
                         if (compilation.hasErrors())
-                            compilation.printErrors();
+                            compilation.printErrors(errorMessage -> output.append(errorMessage + "\n"));
                         else {
                             processor.setFrame(compilation.frame.localCount, compilation.frame.maxStackSize, compilation.frame.instructions);
 
@@ -129,27 +129,29 @@ public class Main {
                             System.setOut(oldSystemOut);
                             Debug.setPrintStream(oldSystemOut);
 
-                            cocu.runtime.Process result = processor.popStack();
+                            if(processor.canPopStack()) {
+                                cocu.runtime.Process result = processor.popStack();
 
-                            /*Instruction[] sendToString = new Instruction[] {
-                                new Instruction(Instruction.OPCODE_LOAD_LOC, 0),
-                                new Instruction(Instruction.OPCODE_SEND_CODE_0, SymbolTable.Codes.toString),
-                                new Instruction(Instruction.OPCODE_FINISH),
-                            };
+                                /*Instruction[] sendToString = new Instruction[] {
+                                    new Instruction(Instruction.OPCODE_LOAD_LOC, 0),
+                                    new Instruction(Instruction.OPCODE_SEND_CODE_0, SymbolTable.Codes.toString),
+                                    new Instruction(Instruction.OPCODE_FINISH),
+                                };
 
-                            processor = new Processor(1, 1, process.instructions);
-                            processor.setup(symbolTable, commonsPath, currentDir);
-                            processor.process(new InteractionHistory(Arrays.asList()));*/
+                                processor = new Processor(1, 1, process.instructions);
+                                processor.setup(symbolTable, commonsPath, currentDir);
+                                processor.process(new InteractionHistory(Arrays.asList()));*/
 
-                            // Send toString() message to result
-                            output.append(result);
+                                // Send toString() message to result
+                                output.append(result);
+                            }
                         }
                     } catch (IOException ex) {
                         System.err.println("Compilation failed.");
                         ex.printStackTrace();
                     } catch (CompilationException ex) {
-                        System.err.println("Compilation failed:");
-                        ex.getErrors().printMessages();
+                        //System.err.println("Compilation failed:");
+                        ex.getErrors().printMessages(errorMessage -> output.append("\n" + errorMessage));
                     }
 
                     // Can the code be parsed? Then run it.
