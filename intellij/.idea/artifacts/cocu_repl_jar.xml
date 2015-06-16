@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="cocu-repl:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/cocu_repl_jar</output-path>
+    <root id="archive" name="cocu.jar">
+      <element id="module-output" name="cocu" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/antlr-4.5-rc-1-complete.jar" path-in-jar="/" />
+      <element id="directory" name="commons">
+        <element id="dir-copy" path="$PROJECT_DIR$/commons" />
+      </element>
+    </root>
+  </artifact>
+</component>
