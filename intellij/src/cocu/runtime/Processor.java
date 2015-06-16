@@ -348,8 +348,8 @@ public class Processor {
 		Debug.println(Debug.LEVEL_HIGH, "/process");
 	}
 
-	public Process peekStack() {
-		return currentFrame.peek();
+	public Process popStack() {
+		return currentFrame.pop();
 	}
 	
 //	private final void signal(Process signal, FrameProcess frame) {
@@ -1181,16 +1181,18 @@ public class Processor {
 			StringProcess pathSource = (StringProcess)currentFrame.pop();
 			String path = pathSource.str;
 			try {
-				String sourcePath;
-				String codePath;
+				String sourcePath = getPathInCommons( path + ".drs");
+				String codePath = getPathInCommons( path + ".drr");
 				
-				if(path.startsWith("/")) {
-					sourcePath = currentPath + path + ".drs";
-					codePath = currentPath + path + ".drr";
+				/*if(path.startsWith("/")) {
+					sourcePath = currentPath + commonsPath + path + ".drs";
+					codePath = currentPath + commonsPath + path + ".drr";
 				} else {
-					sourcePath = commonsPath + "/" + path + ".drs";
-					codePath = commonsPath + "/" + path + ".drr";
-				}
+					sourcePath = currentPath + "/" + commonsPath + "/" + path + ".drs";
+					codePath = currentPath + "/" + commonsPath + "/" + path + ".drr";
+				}*/
+
+				System.out.println("sourcePath=" + sourcePath);
 				
 				//Compiler compiler = new Compiler();
 				FrameInfo processFrame = compiler.load(sourcePath, codePath);
@@ -1438,6 +1440,13 @@ public class Processor {
 			break;
 		}
 		}
+	}
+
+	private String getPathInCommons(String path) {
+		if(path.startsWith("/"))
+			return currentPath + "/" + commonsPath + path;
+		else
+			return currentPath + "/" + commonsPath + "/" + path;
 	}
 
 	private Process wrapNativeObject(Object nativeObject) {

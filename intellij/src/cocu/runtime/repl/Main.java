@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.*;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -64,6 +65,20 @@ public class Main {
         Processor processor = new Processor(compiler);
         String commonsPath = "commons";
         String currentDir = new File("").getAbsolutePath();
+
+        if(!new File(currentDir + "/" + commonsPath).exists()) {
+            // Try load commons from loaded jar
+            System.err.println("Attempting to load commons relative to jar...");
+            try {
+                String jarDir = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile().getAbsolutePath();
+                currentDir = new File(jarDir + "/../../../").getAbsolutePath();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+
+        System.err.println("currentDir=" + currentDir);
+
         processor.setup(symbolTable, commonsPath, currentDir);
 
         pendingScript.addKeyListener(new KeyAdapter() {
@@ -96,7 +111,7 @@ public class Main {
                             processor.setFrame(compilation.frame.localCount, compilation.frame.maxStackSize, compilation.frame.instructions);
                             processor.process();
 
-                            cocu.runtime.Process result = processor.peekStack();
+                            cocu.runtime.Process result = processor.popStack();
 
                             /*Instruction[] sendToString = new Instruction[] {
                                 new Instruction(Instruction.OPCODE_LOAD_LOC, 0),
