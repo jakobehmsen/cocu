@@ -1,5 +1,6 @@
 package cocu.runtime.repl;
 
+import cocu.debugging.Debug;
 import cocu.reflang.*;
 import cocu.runtime.*;
 
@@ -76,6 +77,10 @@ public class Main {
 
         Processor processor = new Processor(compiler, frameLoader);
 
+
+        ByteArrayOutputStream consoleOutputStream = new ByteArrayOutputStream();
+        PrintStream consolePrintStream = new PrintStream(consoleOutputStream);
+
         System.err.println("currentDir=" + currentDir);
 
         processor.setup(symbolTable, commonsPath, currentDir);
@@ -103,7 +108,26 @@ public class Main {
                             compilation.printErrors();
                         else {
                             processor.setFrame(compilation.frame.localCount, compilation.frame.maxStackSize, compilation.frame.instructions);
+
+                            PrintStream oldSystemOut = System.out;
+
+                            ByteArrayOutputStream debugOutput = new ByteArrayOutputStream();
+                            Debug.setPrintStream(new PrintStream(debugOutput));
+
+                            consoleOutputStream.reset();
+                            System.setOut(consolePrintStream);
+
                             processor.process();
+                            String consoleOutput = new String(consoleOutputStream.toByteArray());
+                            output.append("\n");
+
+                            if(consoleOutput.length() > 0)
+                                output.append(consoleOutput + "\n");
+
+                            oldSystemOut.println(new String(debugOutput.toByteArray()));
+
+                            System.setOut(oldSystemOut);
+                            Debug.setPrintStream(oldSystemOut);
 
                             cocu.runtime.Process result = processor.popStack();
 
@@ -118,7 +142,7 @@ public class Main {
                             processor.process(new InteractionHistory(Arrays.asList()));*/
 
                             // Send toString() message to result
-                            output.append("\n" + result);
+                            output.append(result);
                         }
                     } catch (IOException ex) {
                         System.err.println("Compilation failed.");
