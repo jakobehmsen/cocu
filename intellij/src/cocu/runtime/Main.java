@@ -6,6 +6,7 @@ import java.io.IOException;
 import cocu.debugging.Debug;
 import cocu.reflang.CompilationException;
 import cocu.reflang.Compiler;
+import cocu.reflang.FileFrameLoader;
 import cocu.reflang.SymbolTable;
 
 public class Main {
@@ -40,11 +41,11 @@ public class Main {
 			
 			Compiler compiler = new Compiler();
 			
-			FrameInfo mainProcess = compiler.load(mainObjectSourcePath, mainObjectCodePath);
+			FrameInfo mainProcess = compiler.loadFrame(mainObjectSourcePath, mainObjectCodePath);
 			
 			if(mainProcess != null) {
 				SymbolTable symbolTable = SymbolTable.ROOT;
-				Processor processor = new Processor(compiler);
+				Processor processor = new Processor(compiler, new FileFrameLoader(new File(mainObjectSourcePath).getParentFile().getCanonicalPath(), commonsPath));
 				processor.setFrame(mainProcess.localCount, mainProcess.maxStackSize, mainProcess.instructions);
 				processor.setup(symbolTable, commonsPath, new File(mainObjectSourcePath).getParentFile().getCanonicalPath());
 	

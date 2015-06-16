@@ -11,6 +11,7 @@ import java.util.Arrays;
 import cocu.debugging.Debug;
 import cocu.reflang.CompilationException;
 import cocu.reflang.Compiler;
+import cocu.reflang.FrameLoader;
 import cocu.reflang.SymbolTable;
 
 public class Processor {
@@ -216,9 +217,11 @@ public class Processor {
 	private DictionaryProcess protoClosure;
 	private DictionaryProcess protoEnvelope;
 	private Compiler compiler;
+	private FrameLoader frameLoader;
 
-	public Processor(Compiler compiler/*, int localCount, int maxStackSize, Instruction[] instructions*/) {
+	public Processor(Compiler compiler, FrameLoader frameLoader/*, int localCount, int maxStackSize, Instruction[] instructions*/) {
 		this.compiler = compiler;
+		this.frameLoader = frameLoader;
 		// TODO: Consider: Should the Any prototype be this? Should CustomProcess be a DictionaryProcess?
 		// Should CustomProcess not be a process at all? Should CustomProcess hold any and push it instead this?  - Also at other locations, e.g. when loading.
 		// Add Any prototype
@@ -1181,21 +1184,16 @@ public class Processor {
 			StringProcess pathSource = (StringProcess)currentFrame.pop();
 			String path = pathSource.str;
 			try {
+				/*
 				String sourcePath = getPathInCommons( path + ".drs");
 				String codePath = getPathInCommons( path + ".drr");
-				
-				/*if(path.startsWith("/")) {
-					sourcePath = currentPath + commonsPath + path + ".drs";
-					codePath = currentPath + commonsPath + path + ".drr";
-				} else {
-					sourcePath = currentPath + "/" + commonsPath + "/" + path + ".drs";
-					codePath = currentPath + "/" + commonsPath + "/" + path + ".drr";
-				}*/
 
 				System.out.println("sourcePath=" + sourcePath);
 				
 				//Compiler compiler = new Compiler();
-				FrameInfo processFrame = compiler.load(sourcePath, codePath);
+				FrameInfo processFrame = compiler.loadFrame(sourcePath, codePath);*/
+
+				FrameInfo processFrame = frameLoader.load(path, compiler);
 				// Assumed to end with finish instruction. Replace finish with pop_frame.
 				processFrame.instructions[processFrame.instructions.length - 1] = new Instruction(Instruction.OPCODE_RET_NONE);
 				Process[] locals = new Process[processFrame.localCount];
@@ -1204,6 +1202,7 @@ public class Processor {
 				currentFrame = new Frame(
 					currentFrame, locals, processFrame.instructions, processFrame.maxStackSize);
 			} catch (ClassNotFoundException | IOException | CompilationException e) {
+				e.printStackTrace();
 //				e.printStackTrace();
 				throw new RuntimeException("Could not load " + path + ":\n" + e.getMessage(), e);
 			}

@@ -229,7 +229,7 @@ public class Compiler {
 		return new Compilation(frame, errors);
 	}
 	
-	public FrameInfo load(String sourcePath, String codePath) throws FileNotFoundException, IOException, ClassNotFoundException, CompilationException {
+	public FrameInfo loadFrame(String sourcePath, String codePath) throws FileNotFoundException, IOException, ClassNotFoundException, CompilationException {
 		FrameInfo process = null;
 		
 		File mainObjectSourceFile = new File(sourcePath);

@@ -62,20 +62,19 @@ public class Main {
         SymbolTable symbolTable = SymbolTable.ROOT;
 
         cocu.reflang.Compiler compiler = new cocu.reflang.Compiler();
-        Processor processor = new Processor(compiler);
+        FrameLoader frameLoader;
         String commonsPath = "commons";
         String currentDir = new File("").getAbsolutePath();
 
         if(!new File(currentDir + "/" + commonsPath).exists()) {
             // Try load commons from loaded jar
             System.err.println("Attempting to load commons relative to jar...");
-            try {
-                String jarDir = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile().getAbsolutePath();
-                currentDir = new File(jarDir + "/../../../").getAbsolutePath();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
+            frameLoader = new SystemResourceFrameLoader();
+        } else {
+            frameLoader = new FileFrameLoader(currentDir, commonsPath);
         }
+
+        Processor processor = new Processor(compiler, frameLoader);
 
         System.err.println("currentDir=" + currentDir);
 
@@ -96,18 +95,13 @@ public class Main {
                     InputStream inputStream;
                     try {
                         inputStream = new ByteArrayInputStream(code.getBytes());
-                        //FrameInfo process = compiler.compile(inputStream, true);
+
                         Set<String> fields = Arrays.asList(processor.getAny().getNames2(symbolTable)).stream().collect(Collectors.toSet());
                         Compilation compilation = compiler.compile(inputStream, true, fields);
 
                         if (compilation.hasErrors())
                             compilation.printErrors();
                         else {
-                            String commonsPath = "commons";
-                            String currentDir = new File("").getAbsolutePath();
-
-                            //Processor processor = new Processor(process.localCount, process.maxStackSize, process.instructions);
-                            //processor.setup(symbolTable, commonsPath, currentDir);
                             processor.setFrame(compilation.frame.localCount, compilation.frame.maxStackSize, compilation.frame.instructions);
                             processor.process();
 
