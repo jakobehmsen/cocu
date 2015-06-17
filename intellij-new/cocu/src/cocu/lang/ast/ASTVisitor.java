@@ -8,4 +8,6 @@ public interface ASTVisitor<T> {
     T visitInteger(int value);
 
     T visitString(String value);
+
+    T visitVariableDefinition(boolean isDeclaration, String id, AST value);
 }

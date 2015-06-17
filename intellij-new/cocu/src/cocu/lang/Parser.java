@@ -53,6 +53,40 @@ public class Parser {
             }
 
             @Override
+            public AST visitExpression(@NotNull CocuParser.ExpressionContext ctx) {
+                AST receiver = ctx.expressionReceiver().accept(this);
+
+                return receiver;
+            }
+
+            @Override
+            public AST visitAssignment(@NotNull CocuParser.AssignmentContext ctx) {
+                String id = ctx.id().getText();
+                AST value = ctx.expression().accept(this);
+
+                return new AST() {
+                    @Override
+                    public <T> T accept(ASTVisitor<? extends T> visitor) {
+                        return visitor.visitVariableDefinition(false, id, value);
+                    }
+                };
+            }
+
+            @Override
+            public AST visitVariableDeclaration(@NotNull CocuParser.VariableDeclarationContext ctx) {
+                String id = ctx.id().getText();
+
+                AST value = ctx.expression() != null ? ctx.expression().accept(this) : null;
+
+                return new AST() {
+                    @Override
+                    public <T> T accept(ASTVisitor<? extends T> visitor) {
+                        return visitor.visitVariableDefinition(true, id, value);
+                    }
+                };
+            }
+
+            @Override
             public AST visitInteger(@NotNull CocuParser.IntegerContext ctx) {
                 int value = Integer.parseInt(ctx.getText());
 
