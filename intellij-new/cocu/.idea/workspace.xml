@@ -41,14 +41,81 @@
         <entry file="file://$PROJECT_DIR$/src/cocu/lang/Parser.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="83" column="0" selection-start-line="83" selection-start-column="0" selection-end-line="83" selection-end-column="0" />
+              <caret line="133" column="0" selection-start-line="133" selection-start-column="0" selection-end-line="133" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#1703#1704#0" expanded="true" />
-                <element signature="e#1791#1792#0" expanded="true" />
-                <element signature="e#3388#3389#0" expanded="true" />
-                <element signature="e#3470#3471#0" expanded="true" />
+                <element signature="e#1790#1791#0" expanded="true" />
+                <element signature="e#1878#1879#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Function.java" pinned="false" current-in-tab="false">
+        <entry file="jar:///usr/lib/jvm/java-8-oracle/src.zip!/java/util/function/Function.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="48" column="6" selection-start-line="48" selection-start-column="6" selection-end-line="48" selection-end-column="6" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ClassWriter.class" pinned="false" current-in-tab="false">
+        <entry file="jar:///usr/lib/jvm/java-8-oracle/jre/lib/rt.jar!/jdk/internal/org/objectweb/asm/ClassWriter.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-6.92">
+              <caret line="105" column="11" selection-start-line="105" selection-start-column="11" selection-end-line="105" selection-end-column="11" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CocuParser.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cocu/lang/antlr4/CocuParser.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="708" column="0" selection-start-line="708" selection-start-column="0" selection-end-line="708" selection-end-column="0" />
+              <folding>
+                <element signature="e#4173#4174#0" expanded="true" />
+                <element signature="e#4229#4230#0" expanded="true" />
+                <element signature="e#5626#5627#0" expanded="true" />
+                <element signature="e#5691#5692#0" expanded="true" />
+                <element signature="e#12284#12285#0" expanded="true" />
+                <element signature="e#12339#12340#0" expanded="true" />
+                <element signature="e#24384#24385#0" expanded="true" />
+                <element signature="e#24441#24442#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AbstractParseTreeVisitor.class" pinned="false" current-in-tab="false">
+        <entry file="jar://$PROJECT_DIR$/libs/antlr-4.5-rc-1-complete.jar!/org/antlr/v4/runtime/tree/AbstractParseTreeVisitor.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-9.36">
+              <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CocuBaseVisitor.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cocu/lang/antlr4/CocuBaseVisitor.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="108" column="0" selection-start-line="108" selection-start-column="0" selection-end-line="108" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ParserRuleContext.class" pinned="false" current-in-tab="false">
+        <entry file="jar://$PROJECT_DIR$/libs/antlr-4.5-rc-1-complete.jar!/org/antlr/v4/runtime/ParserRuleContext.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-6.92">
+              <caret line="174" column="0" selection-start-line="174" selection-start-column="0" selection-end-line="174" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -56,31 +123,17 @@
       <file leaf-file-name="Main.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/cocu/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.090073526">
-              <caret line="12" column="41" selection-start-line="12" selection-start-column="41" selection-end-line="12" selection-end-column="41" />
+            <state vertical-scroll-proportion="-3.0386028">
+              <caret line="73" column="0" selection-start-line="73" selection-start-column="0" selection-end-line="73" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#353#354#0" expanded="true" />
+                <element signature="e#418#419#0" expanded="true" />
+                <element signature="e#1970#1971#0" expanded="true" />
+                <element signature="e#2031#2032#0" expanded="true" />
+                <element signature="e#2916#2917#0" expanded="true" />
+                <element signature="e#2997#2998#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RuleContext.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/libs/antlr-4.5-rc-1-complete.jar!/org/antlr/v4/runtime/RuleContext.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="93" column="17" selection-start-line="93" selection-start-column="17" selection-end-line="93" selection-end-column="17" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CocuLexer.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cocu/lang/antlr4/CocuLexer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -89,7 +142,7 @@
         <entry file="file://$PROJECT_DIR$/src/cocu/lang/ast/ASTVisitor.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="11" column="75" selection-start-line="11" selection-start-column="75" selection-end-line="11" selection-end-column="75" />
+              <caret line="15" column="57" selection-start-line="15" selection-start-column="57" selection-end-line="15" selection-end-column="57" />
               <folding />
             </state>
           </provider>
@@ -131,9 +184,9 @@
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="65" />
-    <option name="y" value="-4" />
+    <option name="y" value="24" />
     <option name="width" value="1855" />
-    <option name="height" value="1084" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="true" id="Add" />
@@ -159,7 +212,6 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
@@ -301,6 +353,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -315,6 +368,9 @@
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="recentsLimit" value="5" />
     <property name="dynamic.classpath" value="false" />
+    <property name="FullScreen" value="false" />
+    <property name="OverrideImplement.combined" value="true" />
+    <property name="OverrideImplement.overriding.sorted" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -532,11 +588,17 @@
       <option name="project" value="LOCAL" />
       <updated>1434546843083</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Started work on variable definition.">
+      <created>1434565251066</created>
+      <option name="number" value="00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1434565251066</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="65" y="-4" width="1855" height="1084" extended-state="6" />
+    <frame x="65" y="24" width="1855" height="1056" extended-state="6" />
     <editor active="false" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -552,7 +614,8 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24959569" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24959569" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3294979" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -563,8 +626,15 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
@@ -573,19 +643,110 @@
     <MESSAGE value="Started work on a simplified version of cocu with a single built-in open message protocol.&#10;&#10;Something ala:&#10;&#10;var myObj = #{&#10;    var envelope = receive // an envelope contains a sender and message related info (selector and arguments)&#10;    var selector = envelopeSelector: envelope&#10;    var sender = envelopeSender: envelope // sender is basically a continuation at &quot;var res = myObj.doStuff&quot;&#10;    &#10;    match: self&#10;        Case: &quot;doStuff&quot; Then: reply: sender, &quot;There&quot; // reply &quot;continues&quot; at send-site with the supplied argument&#10;}&#10;&#10;var res = myObj.doStuff&#10;// res should now refer to the string &quot;There&quot;" />
     <MESSAGE value="Added initial grammar derived and simplified somewhat from the existing cocu grammar." />
     <MESSAGE value="Started work on AST parsing." />
-    <option name="LAST_COMMIT_MESSAGE" value="Started work on AST parsing." />
+    <MESSAGE value="Started work on variable definition." />
+    <option name="LAST_COMMIT_MESSAGE" value="Started work on variable definition." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="3" />
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/cocu/Main.java</url>
+          <line>168</line>
+          <properties />
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/cocu/Main.java</url>
+          <line>205</line>
+          <properties />
+          <option name="timeStamp" value="26" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/cocu/Main.java</url>
+          <line>173</line>
+          <properties />
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/cocu/Main.java</url>
+          <line>117</line>
+          <properties />
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+      </breakpoints>
+      <option name="time" value="30" />
     </breakpoint-manager>
-    <watches-manager />
+    <watches-manager>
+      <configuration name="Application">
+        <watch expression="ctx.expressionReceiver()" language="JAVA" custom="" />
+      </configuration>
+    </watches-manager>
   </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/cocu/lang/ast/AST.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cocu/lang/Parser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="83" column="0" selection-start-line="83" selection-start-column="0" selection-end-line="83" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1790#1791#0" expanded="true" />
+            <element signature="e#1878#1879#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cocu/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#353#354#0" expanded="true" />
+            <element signature="e#418#419#0" expanded="true" />
+            <element signature="e#1970#1971#0" expanded="true" />
+            <element signature="e#2031#2032#0" expanded="true" />
+            <element signature="e#2916#2917#0" expanded="true" />
+            <element signature="e#2997#2998#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/libs/antlr-4.5-rc-1-complete.jar!/org/antlr/v4/runtime/RuleContext.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="93" column="17" selection-start-line="93" selection-start-column="17" selection-end-line="93" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cocu/lang/antlr4/CocuLexer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cocu/lang/ast/ASTVisitor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="11" column="75" selection-start-line="11" selection-start-column="75" selection-end-line="11" selection-end-column="75" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/cocu/lang/ast/AST.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -600,10 +761,8 @@
           <caret line="49" column="0" selection-start-line="49" selection-start-column="0" selection-end-line="49" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#1703#1704#0" expanded="true" />
-            <element signature="e#1791#1792#0" expanded="true" />
-            <element signature="e#3388#3389#0" expanded="true" />
-            <element signature="e#3470#3471#0" expanded="true" />
+            <element signature="e#1790#1791#0" expanded="true" />
+            <element signature="e#1878#1879#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -614,6 +773,12 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#353#354#0" expanded="true" />
+            <element signature="e#418#419#0" expanded="true" />
+            <element signature="e#1970#1971#0" expanded="true" />
+            <element signature="e#2031#2032#0" expanded="true" />
+            <element signature="e#2916#2917#0" expanded="true" />
+            <element signature="e#2997#2998#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -669,31 +834,92 @@
     <entry file="file://$PROJECT_DIR$/src/cocu/lang/ast/ASTVisitor.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="11" column="75" selection-start-line="11" selection-start-column="75" selection-end-line="11" selection-end-column="75" />
+          <caret line="15" column="57" selection-start-line="15" selection-start-column="57" selection-end-line="15" selection-end-column="57" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-8-oracle/jre/lib/rt.jar!/jdk/internal/org/objectweb/asm/ClassWriter.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.92">
+          <caret line="105" column="11" selection-start-line="105" selection-start-column="11" selection-end-line="105" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/libs/antlr-4.5-rc-1-complete.jar!/org/antlr/v4/runtime/ParserRuleContext.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.92">
+          <caret line="174" column="0" selection-start-line="174" selection-start-column="0" selection-end-line="174" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-8-oracle/src.zip!/java/util/function/Function.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="48" column="6" selection-start-line="48" selection-start-column="6" selection-end-line="48" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/libs/antlr-4.5-rc-1-complete.jar!/org/antlr/v4/runtime/tree/AbstractParseTreeVisitor.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-9.36">
+          <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cocu/lang/antlr4/CocuBaseVisitor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="108" column="0" selection-start-line="108" selection-start-column="0" selection-end-line="108" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cocu/lang/antlr4/CocuParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="708" column="0" selection-start-line="708" selection-start-column="0" selection-end-line="708" selection-end-column="0" />
+          <folding>
+            <element signature="e#4173#4174#0" expanded="true" />
+            <element signature="e#4229#4230#0" expanded="true" />
+            <element signature="e#5626#5627#0" expanded="true" />
+            <element signature="e#5691#5692#0" expanded="true" />
+            <element signature="e#12284#12285#0" expanded="true" />
+            <element signature="e#12339#12340#0" expanded="true" />
+            <element signature="e#24384#24385#0" expanded="true" />
+            <element signature="e#24441#24442#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/cocu/lang/Parser.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="83" column="0" selection-start-line="83" selection-start-column="0" selection-end-line="83" selection-end-column="0" />
+          <caret line="133" column="0" selection-start-line="133" selection-start-column="0" selection-end-line="133" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#1703#1704#0" expanded="true" />
-            <element signature="e#1791#1792#0" expanded="true" />
-            <element signature="e#3388#3389#0" expanded="true" />
-            <element signature="e#3470#3471#0" expanded="true" />
+            <element signature="e#1790#1791#0" expanded="true" />
+            <element signature="e#1878#1879#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/cocu/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.090073526">
-          <caret line="12" column="41" selection-start-line="12" selection-start-column="41" selection-end-line="12" selection-end-column="41" />
+        <state vertical-scroll-proportion="-3.0386028">
+          <caret line="73" column="0" selection-start-line="73" selection-start-column="0" selection-end-line="73" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#353#354#0" expanded="true" />
+            <element signature="e#418#419#0" expanded="true" />
+            <element signature="e#1970#1971#0" expanded="true" />
+            <element signature="e#2031#2032#0" expanded="true" />
+            <element signature="e#2916#2917#0" expanded="true" />
+            <element signature="e#2997#2998#0" expanded="true" />
           </folding>
         </state>
       </provider>

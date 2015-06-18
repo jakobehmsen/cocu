@@ -14,8 +14,11 @@ import org.antlr.v4.runtime.misc.NotNull;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Parser {
     public AST parse(String input) {
@@ -56,7 +59,56 @@ public class Parser {
             public AST visitExpression(@NotNull CocuParser.ExpressionContext ctx) {
                 AST receiver = ctx.expressionReceiver().accept(this);
 
+                // Process args
+
                 return receiver;
+            }
+
+            @Override
+            public AST visitMessageExchange(@NotNull CocuParser.MessageExchangeContext ctx) {
+                AST receiver = ctx.receiver().accept(this);
+
+                // Process args
+
+                return receiver;
+            }
+
+            @Override
+            public AST visitSelfMultiKeyMessage(@NotNull CocuParser.SelfMultiKeyMessageContext ctx) {
+                String selector =
+                    Stream.concat(
+                        Arrays.asList(ctx.multiKeyMessage().multiKeyMessageHead().ID_UNCAP().getText()).stream(),
+                        ctx.multiKeyMessage().multiKeyMessageTail().stream().map(x -> x.ID_CAP().getText())
+                    ).collect(Collectors.joining());
+
+                List<AST> args =
+                    Stream.concat(
+                        getMultiMessageArgCtxs(ctx.multiKeyMessage().multiKeyMessageHead().multiKeyMessageArgs()),
+                        ctx.multiKeyMessage().multiKeyMessageTail().stream().flatMap(x -> getMultiMessageArgCtxs(x.multiKeyMessageArgs()))
+                    ).collect(Collectors.toList());
+
+                return new AST() {
+                    @Override
+                    public <T> T accept(ASTVisitor<? extends T> visitor) {
+                        return visitor.visitEnvironmentMessage(selector, args);
+                    }
+                };
+            }
+
+            private Stream<AST> getMultiMessageArgCtxs(CocuParser.MultiKeyMessageArgsContext ctx) {
+                return ctx.multiKeyMessageArg().stream().map(x -> getMultiMessageArgCtx(x));
+            }
+
+            private AST getMultiMessageArgCtx(CocuParser.MultiKeyMessageArgContext ctx) {
+               if(ctx.selfSingleKeyMessage() != null)
+                   return ctx.selfSingleKeyMessage().accept(this);
+               else {
+                   AST receiver = ctx.multiKeyMessageArgReceiver().accept(this);
+
+                   // Process args
+
+                   return receiver;
+               }
             }
 
             @Override
@@ -68,6 +120,18 @@ public class Parser {
                     @Override
                     public <T> T accept(ASTVisitor<? extends T> visitor) {
                         return visitor.visitVariableDefinition(false, id, value);
+                    }
+                };
+            }
+
+            @Override
+            public AST visitAccess(@NotNull CocuParser.AccessContext ctx) {
+                String selector = ctx.getText();
+
+                return new AST() {
+                    @Override
+                    public <T> T accept(ASTVisitor<? extends T> visitor) {
+                        return visitor.visitEnvironmentMessage(selector, Collections.emptyList());
                     }
                 };
             }
@@ -108,6 +172,19 @@ public class Parser {
                     @Override
                     public <T> T accept(ASTVisitor<? extends T> visitor) {
                         return visitor.visitString(value);
+                    }
+                };
+            }
+
+            @Override
+            public AST visitSpawn(@NotNull CocuParser.SpawnContext ctx) {
+                AST environment = ctx.explicitPrototype != null ? ctx.explicitPrototype.accept(this) : null;
+                List<AST> expressions = ctx.expression().stream().map(x -> x.accept(this)).collect(Collectors.toList());
+
+                return new AST() {
+                    @Override
+                    public <T> T accept(ASTVisitor<? extends T> visitor) {
+                        return visitor.visitSpawn(environment, expressions);
                     }
                 };
             }

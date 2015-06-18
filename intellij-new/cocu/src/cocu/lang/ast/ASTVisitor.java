@@ -10,4 +10,8 @@ public interface ASTVisitor<T> {
     T visitString(String value);
 
     T visitVariableDefinition(boolean isDeclaration, String id, AST value);
+
+    T visitEnvironmentMessage(String selector, List<AST> args);
+
+    T visitSpawn(AST environment, List<AST> expressions);
 }
