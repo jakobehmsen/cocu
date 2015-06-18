@@ -68,8 +68,11 @@ public class Main {
             "var myObject = #{",
             "    var envelope = receive",
             "    reply: envelope, \"A reply\"",
+            "    envelope = receive",
+            "    reply: envelope, \"Another reply\"",
             "}",
-            "myObject.msg"
+            "var firstReply = myObject.msg",
+            "var secondReply = myObject.msg"
         ).stream().collect(Collectors.joining("\n"));
         AST ast = parser.parse(src);
 
@@ -212,6 +215,12 @@ public class Main {
             private void send(Object message, Spawned receiver) {
                 SendFrame sender = this.sendFrame;
 
+                // Setup yield for next receive
+                receiver.yielder = () -> {
+                    // If no reply is made, then control is never yielded back to outer frame
+                    receiver.yielder = () -> { };
+                };
+
                 sendFrame = new SendFrame(
                     receiver,
                     sender
@@ -233,9 +242,6 @@ public class Main {
                 SendFrame outerSendFrame = sendFrame;
 
                 receiver.yielder = () -> {
-                    // Reset yielder
-                    receiver.yielder = () -> { };
-
                     sendFrame = outerSendFrame;
                     popFrame(receiver);
                 };
