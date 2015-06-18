@@ -14,9 +14,8 @@ import org.antlr.v4.runtime.misc.NotNull;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,6 +42,8 @@ public class Parser {
 
     private AST antlr4ToAst(ParserRuleContext ctx) {
         return ctx.accept(new CocuBaseVisitor<AST>() {
+            private HashSet<String> declaredVariables = new HashSet<String>();
+
             @Override
             public AST visitProgram(@NotNull CocuParser.ProgramContext ctx) {
                 List<AST> expressions = ctx.expression().stream().map(x -> x.accept(this)).collect(Collectors.toList());
@@ -59,7 +60,7 @@ public class Parser {
             public AST visitExpression(@NotNull CocuParser.ExpressionContext ctx) {
                 AST receiver = ctx.expressionReceiver().accept(this);
 
-                // Process args
+                // Process chain
 
                 return receiver;
             }
@@ -68,9 +69,40 @@ public class Parser {
             public AST visitMessageExchange(@NotNull CocuParser.MessageExchangeContext ctx) {
                 AST receiver = ctx.receiver().accept(this);
 
-                // Process args
+                ArrayList<ParserRuleContext> chain = new ArrayList<>();
+                ctx.messageChain().forEach(x -> chain.add(x));
+                if(ctx.messageEnd() != null)
+                    chain.add(ctx.messageEnd());
+
+                // Process chain
+                return visitMessageChain(receiver, chain);
+
+                //return receiver;
+            }
+
+            private AST visitMessageChain(AST receiver, List<ParserRuleContext> chain) {
+                for (ParserRuleContext msgCtx : chain) {
+                    AST messageReceiver = receiver;
+                    receiver = createMessageSend(msgCtx, (selector, args) -> new AST() {
+                        @Override
+                        public <T> T accept(ASTVisitor<? extends T> visitor) {
+                            return visitor.visitMessageSend(messageReceiver, selector, args);
+                        }
+                    });
+                }
 
                 return receiver;
+            }
+
+            private <T> T createMessageSend(ParserRuleContext messageCtx, BiFunction<String, List<AST>, T> messageCreator) {
+                return messageCtx.accept(new CocuBaseVisitor<T>() {
+                    @Override
+                    public T visitUnaryMessage(@NotNull CocuParser.UnaryMessageContext ctx) {
+                        String selector = ctx.getText();
+
+                        return messageCreator.apply(selector, Collections.emptyList());
+                    }
+                });
             }
 
             @Override
@@ -100,15 +132,15 @@ public class Parser {
             }
 
             private AST getMultiMessageArgCtx(CocuParser.MultiKeyMessageArgContext ctx) {
-               if(ctx.selfSingleKeyMessage() != null)
-                   return ctx.selfSingleKeyMessage().accept(this);
-               else {
-                   AST receiver = ctx.multiKeyMessageArgReceiver().accept(this);
+                if (ctx.selfSingleKeyMessage() != null)
+                    return ctx.selfSingleKeyMessage().accept(this);
+                else {
+                    AST receiver = ctx.multiKeyMessageArgReceiver().accept(this);
 
-                   // Process args
+                    // Process args
 
-                   return receiver;
-               }
+                    return receiver;
+                }
             }
 
             @Override
@@ -128,17 +160,27 @@ public class Parser {
             public AST visitAccess(@NotNull CocuParser.AccessContext ctx) {
                 String selector = ctx.getText();
 
-                return new AST() {
-                    @Override
-                    public <T> T accept(ASTVisitor<? extends T> visitor) {
-                        return visitor.visitEnvironmentMessage(selector, Collections.emptyList());
-                    }
-                };
+                if (declaredVariables.contains(selector)) {
+                    return new AST() {
+                        @Override
+                        public <T> T accept(ASTVisitor<? extends T> visitor) {
+                            return visitor.visitVariableUsage(selector);
+                        }
+                    };
+                } else
+                    return new AST() {
+                        @Override
+                        public <T> T accept(ASTVisitor<? extends T> visitor) {
+                            return visitor.visitEnvironmentMessage(selector, Collections.emptyList());
+                        }
+                    };
             }
 
             @Override
             public AST visitVariableDeclaration(@NotNull CocuParser.VariableDeclarationContext ctx) {
                 String id = ctx.id().getText();
+
+                declaredVariables.add(id);
 
                 AST value = ctx.expression() != null ? ctx.expression().accept(this) : null;
 

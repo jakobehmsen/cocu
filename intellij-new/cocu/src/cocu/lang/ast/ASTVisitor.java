@@ -14,4 +14,8 @@ public interface ASTVisitor<T> {
     T visitEnvironmentMessage(String selector, List<AST> args);
 
     T visitSpawn(AST environment, List<AST> expressions);
+
+    T visitVariableUsage(String id);
+
+    T visitMessageSend(AST receiver, String selector, List<AST> args);
 }

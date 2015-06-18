@@ -4,10 +4,13 @@ import cocu.lang.Parser;
 import cocu.lang.ast.AST;
 import cocu.lang.ast.ASTVisitor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Main {
     private interface SpecialAST extends AST {
@@ -21,11 +24,25 @@ public class Main {
     private interface SpecialASTVisitor<T> extends ASTVisitor<T> {
         T visitQuote(AST ast);
         T visitReceive();
+        T visitReply(AST envelope, AST value);
     }
 
     private static class Spawned {
         public Consumer<Object> responseHandler;
         public Runnable yielder;
+        public Hashtable<String, Object> variables = new Hashtable<>();
+    }
+
+    private static class Envelope {
+        public SendFrame sender;
+        public String selector;
+        public Object[] arguments;
+
+        public Envelope(SendFrame sender, Object[] arguments, String selector) {
+            this.sender = sender;
+            this.arguments = arguments;
+            this.selector = selector;
+        }
     }
 
     private static class SendFrame {
@@ -33,11 +50,11 @@ public class Main {
         public Spawned receiver;
         public SendFrame sender;
 
-        public SendFrame(Consumer<Object> responseHandler, SendFrame sender) {
+        /*public SendFrame(Consumer<Object> responseHandler, SendFrame sender) {
             this.receiver = new Spawned();
             this.receiver.responseHandler = responseHandler;
             this.sender = sender;
-        }
+        }*/
 
         public SendFrame(Spawned receiver, SendFrame sender) {
             this.receiver = receiver;
@@ -47,10 +64,14 @@ public class Main {
 
     public static void main(String[] args) {
         Parser parser = new Parser();
-        AST ast = parser.parse(
-            //"quote: 123"
-            "var myObject = #{ receive }"
-        );
+        String src = Arrays.asList(
+            "var myObject = #{",
+            "    var envelope = receive",
+            "    reply: envelope, \"A reply\"",
+            "}",
+            "myObject.msg"
+        ).stream().collect(Collectors.joining("\n"));
+        AST ast = parser.parse(src);
 
         Hashtable<String, Function<List<AST>, SpecialAST>> macros = new Hashtable<>();
 
@@ -68,17 +89,23 @@ public class Main {
             }
         });
 
+        macros.put("reply", asts -> new SpecialAST() {
+            @Override
+            public <T> T acceptSpecial(SpecialASTVisitor<? extends T> visitor) {
+                return visitor.visitReply(asts.get(0), asts.get(1));
+            }
+        });
+
+        Spawned root = new Spawned();
+        root.responseHandler = value ->
+            System.out.println("Result: " + value);
+        root.yielder = () -> { };
+
         ast.accept(new SpecialASTVisitor<Object>() {
             SendFrame sendFrame = new SendFrame(
-                value -> {
-                    System.out.println("Result:" + value);
-                },
+                root,
                 null
             );
-
-            /*Consumer<Object> responseHandler = value -> {
-                System.out.println("Result:" + value);
-            };*/
 
             private void pushFrame(Consumer<Object> newResponseHandler) {
                 SendFrame sendFrame = this.sendFrame;
@@ -94,28 +121,11 @@ public class Main {
                 sendFrame.receiver.responseHandler.accept(result);
             }
 
-            private void send(Object message, Spawned receiver) {
-                SendFrame sender = this.sendFrame;
-
-                sendFrame = new SendFrame(
-                    receiver,
-                    sender
-                );
-            }
-
-            private void respond(Object result) {
-                SendFrame sender = this.sendFrame;
-                this.sendFrame = sender;
-                this.sendFrame.receiver.responseHandler.accept(result);
-            }
-
-            private Hashtable<String, Object> variables = new Hashtable<>();
-
             @Override
             public Object visitVariableDefinition(boolean isDeclaration, String id, AST value) {
                 if (value != null) {
                     pushFrame(result -> {
-                        variables.put(id, result);
+                        sendFrame.receiver.variables.put(id, result);
                         popFrame(result);
                     });
 
@@ -126,12 +136,27 @@ public class Main {
             }
 
             @Override
-            public Object visitProgram(List<AST> expressions) {
-                expressions.subList(0, expressions.size() - 1).forEach(e -> e.accept(this));
+            public Object visitVariableUsage(String id) {
+                Object value = sendFrame.receiver.variables.get(id);
 
-                expressions.get(expressions.size() - 1).accept(this);
+                popFrame(value);
 
                 return null;
+            }
+
+            @Override
+            public Object visitProgram(List<AST> expressions) {
+                evaluateExpressionsReturnLast(expressions, 0);
+
+                return null;
+            }
+
+            private void evaluateExpressionsReturnLast(List<AST> expressions, int index) {
+                if(index < expressions.size() - 1)
+                    pushFrame(result ->
+                        evaluateExpressionsReturnLast(expressions, index + 1));
+
+                expressions.get(index).accept(this);
             }
 
             @Override
@@ -155,13 +180,50 @@ public class Main {
                 if (macro != null) {
                     SpecialAST replacement = macro.apply(args);
 
-                    //pushFrame(result -> popFrame(result));
-
                     replacement.acceptSpecial(this);
                 }
 
                 // Invoke environment
                 return null;
+            }
+
+            @Override
+            public Object visitMessageSend(AST receiver, String selector, List<AST> args) {
+                pushFrame(receiverValue -> {
+                    visitMessageArgs(selector, (Spawned)receiverValue, new ArrayList<>(), args, 0);
+                });
+                receiver.accept(this);
+
+                return null;
+            }
+
+            private void visitMessageArgs(String selector, Spawned receiverValue, List<Object> argValues, List<AST> args, int i) {
+                if(i < args.size()) {
+                    pushFrame(argValue -> {
+                        argValues.add(argValue);
+                        visitMessageArgs(selector, receiverValue, argValues, args, i + 1);
+                    });
+                    args.get(i).accept(this);
+                } else {
+                    send(selector, receiverValue);
+                }
+            }
+
+            private void send(Object message, Spawned receiver) {
+                SendFrame sender = this.sendFrame;
+
+                sendFrame = new SendFrame(
+                    receiver,
+                    sender
+                );
+
+                popFrame(new Envelope(sender, null, (String)message));
+            }
+
+            private void respond(Object result) {
+                SendFrame sender = this.sendFrame;
+                this.sendFrame = sender;
+                this.sendFrame.receiver.responseHandler.accept(result);
             }
 
             @Override
@@ -171,6 +233,9 @@ public class Main {
                 SendFrame outerSendFrame = sendFrame;
 
                 receiver.yielder = () -> {
+                    // Reset yielder
+                    receiver.yielder = () -> { };
+
                     sendFrame = outerSendFrame;
                     popFrame(receiver);
                 };
@@ -186,24 +251,14 @@ public class Main {
             }
 
             private void evaluateExpressions(List<AST> expressions, int index) {
-                /*for(int i = index; i < expressions.size(); i++) {
-                    int startIndex = i;
-                    pushFrame(result -> {
-                        if(receiving) {
-                            //pushFrame(message -> popFrame(message));
-                            receiving = false;
+                if(index < expressions.size()) {
+                    pushFrame(result -> evaluateExpressions(expressions, index + 1));
 
-                            evaluateExpressions(expressions, startIndex);
-                        }
-                    });
-                    expressions.get(i).accept(this);
-                }*/
-
-                //int startIndex = i;
-                pushFrame(result -> {
-                    evaluateExpressions(expressions, index + 1);
-                });
-                expressions.get(index).accept(this);
+                    expressions.get(index).accept(this);
+                } else {
+                    // Implicitly yield control
+                    sendFrame.receiver.yielder.run();
+                }
             }
 
             // Specials
@@ -214,14 +269,28 @@ public class Main {
                 return null;
             }
 
-            //private boolean receiving;
-
             @Override
             public Object visitReceive() {
                 sendFrame.receiver.yielder.run();
-                //sendFrame = sendFrame.sender;
-                //receiving = true;
-                //popFrame(null);
+
+                return null;
+            }
+
+            @Override
+            public Object visitReply(AST envelope, AST value) {
+                pushFrame(envelopeValue -> {
+                    pushFrame(valueValue -> {
+                        sendFrame.receiver.yielder = () -> {
+                            SendFrame sender = ((Envelope)envelopeValue).sender;
+                            this.sendFrame = sender;
+                            this.sendFrame.receiver.responseHandler.accept(valueValue);
+                        };
+
+                        popFrame(value);
+                    });
+                    value.accept(this);
+                });
+                envelope.accept(this);
 
                 return null;
             }
