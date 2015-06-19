@@ -3,14 +3,16 @@ package cocu;
 import cocu.lang.Parser;
 import cocu.lang.ast.AST;
 import cocu.lang.ast.ASTVisitor;
+import javafx.util.Pair;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.List;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Main {
     private interface SpecialAST extends AST {
@@ -25,6 +27,7 @@ public class Main {
         T visitQuote(AST ast);
         T visitReceive();
         T visitReply(AST envelope, AST value);
+        T visitMatch(AST target, Map<String, AST> table);
     }
 
     private static class Spawned {
@@ -62,37 +65,129 @@ public class Main {
         }
     }
 
+    private static List<String> splitByCamelCase(String str) {
+        int[] capIndexes =
+            IntStream.concat(
+                IntStream.of(0),
+                IntStream.concat(
+                    IntStream.range(0, str.length()).filter(x -> Character.isUpperCase(str.charAt(x))),
+                    IntStream.of(str.length())
+                )
+            ).toArray();
+
+        return IntStream.range(0, capIndexes.length - 1).mapToObj(x -> {
+            int start = capIndexes[x];
+            int end = capIndexes[x + 1];
+            return str.substring(start, end);
+        }).collect(Collectors.toList());
+    }
+
     public static void main(String[] args) {
         Parser parser = new Parser();
         String src = Arrays.asList(
-            "var myObject = #{",
+            "match: \"aMsg2\"",
+            "    Case: \"aMsg\" Then' \"theMsg\"",
+            "    Case: \"aMsg2\" Then' \"theMsg2\""
+            /*"var myObject = #{",
             "    var envelope = receive",
             "    reply: envelope, \"A reply\"",
             "    envelope = receive",
             "    reply: envelope, \"Another reply\"",
             "}",
             "var firstReply = myObject.msg",
-            "var secondReply = myObject.msg"
+            "var secondReply = myObject.msg"*/
         ).stream().collect(Collectors.joining("\n"));
         AST ast = parser.parse(src);
 
-        Hashtable<String, Function<List<AST>, SpecialAST>> macros = new Hashtable<>();
+        ArrayList<Function<String, Function<List<AST>, SpecialAST>>> allMacros = new ArrayList<>();
 
-        macros.put("quote", asts -> new SpecialAST() {
+        Hashtable<String, Function<List<AST>, SpecialAST>> indexedMacros = new Hashtable<>();
+
+        allMacros.add(x -> {
+            List<String> split = splitByCamelCase(x);
+            if(split.get(0).equals("match")) {
+                // Check whether only CaseThen pairs proceeds
+
+                return asts -> {
+                    AST target = asts.get(0);
+
+                    Hashtable<String, AST> table = new Hashtable<>();
+
+                    for(int i = 1; i < asts.size(); i += 2) {
+                        String key = asts.get(i).accept(new ASTVisitor<String>() {
+                            @Override
+                            public String visitProgram(List<AST> expressions) {
+                                return null;
+                            }
+
+                            @Override
+                            public String visitInteger(int value) {
+                                return null;
+                            }
+
+                            @Override
+                            public String visitString(String value) {
+                                return value;
+                            }
+
+                            @Override
+                            public String visitVariableDefinition(boolean isDeclaration, String id, AST value) {
+                                return null;
+                            }
+
+                            @Override
+                            public String visitEnvironmentMessage(String selector, List<AST> args) {
+                                return null;
+                            }
+
+                            @Override
+                            public String visitSpawn(AST environment, List<AST> expressions) {
+                                return null;
+                            }
+
+                            @Override
+                            public String visitVariableUsage(String id) {
+                                return null;
+                            }
+
+                            @Override
+                            public String visitMessageSend(AST receiver, String selector, List<AST> args) {
+                                return null;
+                            }
+                        });
+                        AST then = asts.get(i + 1);
+                        table.put(key, then);
+                    }
+
+                    return new SpecialAST() {
+                        @Override
+                        public <T> T acceptSpecial(SpecialASTVisitor<? extends T> visitor) {
+                            return visitor.visitMatch(target, table);
+                        }
+                    };
+                };
+            }
+
+            return null;
+        });
+
+        allMacros.add(x -> indexedMacros.get(x));
+
+        indexedMacros.put("quote", asts -> new SpecialAST() {
             @Override
             public <T> T acceptSpecial(SpecialASTVisitor<? extends T> visitor) {
                 return visitor.visitQuote(asts.get(0));
             }
         });
 
-        macros.put("receive", asts -> new SpecialAST() {
+        indexedMacros.put("receive", asts -> new SpecialAST() {
             @Override
             public <T> T acceptSpecial(SpecialASTVisitor<? extends T> visitor) {
                 return visitor.visitReceive();
             }
         });
 
-        macros.put("reply", asts -> new SpecialAST() {
+        indexedMacros.put("reply", asts -> new SpecialAST() {
             @Override
             public <T> T acceptSpecial(SpecialASTVisitor<? extends T> visitor) {
                 return visitor.visitReply(asts.get(0), asts.get(1));
@@ -102,7 +197,8 @@ public class Main {
         Spawned root = new Spawned();
         root.responseHandler = value ->
             System.out.println("Result: " + value);
-        root.yielder = () -> { };
+        root.yielder = () -> {
+        };
 
         ast.accept(new SpecialASTVisitor<Object>() {
             SendFrame sendFrame = new SendFrame(
@@ -155,7 +251,7 @@ public class Main {
             }
 
             private void evaluateExpressionsReturnLast(List<AST> expressions, int index) {
-                if(index < expressions.size() - 1)
+                if (index < expressions.size() - 1)
                     pushFrame(result ->
                         evaluateExpressionsReturnLast(expressions, index + 1));
 
@@ -178,9 +274,14 @@ public class Main {
 
             @Override
             public Object visitEnvironmentMessage(String selector, List<AST> args) {
-                Function<List<AST>, SpecialAST> macro = macros.get(selector);
+                Optional<Function<List<AST>, SpecialAST>> applicableMacro =
+                    allMacros.stream()
+                        .map(x -> x.apply(selector))
+                        .filter(x -> x != null)
+                        .findFirst();
 
-                if (macro != null) {
+                if (applicableMacro.isPresent()) {
+                    Function<List<AST>, SpecialAST> macro = applicableMacro.get();
                     SpecialAST replacement = macro.apply(args);
 
                     replacement.acceptSpecial(this);
@@ -193,7 +294,7 @@ public class Main {
             @Override
             public Object visitMessageSend(AST receiver, String selector, List<AST> args) {
                 pushFrame(receiverValue -> {
-                    visitMessageArgs(selector, (Spawned)receiverValue, new ArrayList<>(), args, 0);
+                    visitMessageArgs(selector, (Spawned) receiverValue, new ArrayList<>(), args, 0);
                 });
                 receiver.accept(this);
 
@@ -201,7 +302,7 @@ public class Main {
             }
 
             private void visitMessageArgs(String selector, Spawned receiverValue, List<Object> argValues, List<AST> args, int i) {
-                if(i < args.size()) {
+                if (i < args.size()) {
                     pushFrame(argValue -> {
                         argValues.add(argValue);
                         visitMessageArgs(selector, receiverValue, argValues, args, i + 1);
@@ -218,7 +319,8 @@ public class Main {
                 // Setup yield for next receive
                 receiver.yielder = () -> {
                     // If no reply is made, then control is never yielded back to outer frame
-                    receiver.yielder = () -> { };
+                    receiver.yielder = () -> {
+                    };
                 };
 
                 sendFrame = new SendFrame(
@@ -226,7 +328,7 @@ public class Main {
                     sender
                 );
 
-                popFrame(new Envelope(sender, null, (String)message));
+                popFrame(new Envelope(sender, null, (String) message));
             }
 
             private void respond(Object result) {
@@ -257,7 +359,7 @@ public class Main {
             }
 
             private void evaluateExpressions(List<AST> expressions, int index) {
-                if(index < expressions.size()) {
+                if (index < expressions.size()) {
                     pushFrame(result -> evaluateExpressions(expressions, index + 1));
 
                     expressions.get(index).accept(this);
@@ -287,7 +389,7 @@ public class Main {
                 pushFrame(envelopeValue -> {
                     pushFrame(valueValue -> {
                         sendFrame.receiver.yielder = () -> {
-                            SendFrame sender = ((Envelope)envelopeValue).sender;
+                            SendFrame sender = ((Envelope) envelopeValue).sender;
                             this.sendFrame = sender;
                             this.sendFrame.receiver.responseHandler.accept(valueValue);
                         };
@@ -297,6 +399,17 @@ public class Main {
                     value.accept(this);
                 });
                 envelope.accept(this);
+
+                return null;
+            }
+
+            @Override
+            public Object visitMatch(AST target, Map<String, AST> table) {
+                pushFrame(key -> {
+                    AST then = table.get(key);
+                    then.accept(this);
+                });
+                target.accept(this);
 
                 return null;
             }
