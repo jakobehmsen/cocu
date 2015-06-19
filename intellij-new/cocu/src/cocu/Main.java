@@ -27,7 +27,7 @@ public class Main {
         T visitQuote(AST ast);
         T visitReceive();
         T visitReply(AST envelope, AST value);
-        T visitMatch(AST target, Map<String, AST> table);
+        T visitMatch(AST target, Map<Object, AST> table);
     }
 
     private static class Spawned {
@@ -85,9 +85,10 @@ public class Main {
     public static void main(String[] args) {
         Parser parser = new Parser();
         String src = Arrays.asList(
-            "match: \"aMsg2\"",
-            "    Case: \"aMsg\" Then' \"theMsg\"",
-            "    Case: \"aMsg2\" Then' \"theMsg2\""
+            "match: 100",
+            "    Case: 2 Then' 1",
+            "    Case: \"aMsg2\" Then' 2",
+            "    Case: 100 Then' 200"
             /*"var myObject = #{",
             "    var envelope = receive",
             "    reply: envelope, \"A reply\"",
@@ -98,6 +99,9 @@ public class Main {
             "var secondReply = myObject.msg"*/
         ).stream().collect(Collectors.joining("\n"));
         AST ast = parser.parse(src);
+
+        System.out.println("Source:");
+        System.out.println(src);
 
         ArrayList<Function<String, Function<List<AST>, SpecialAST>>> allMacros = new ArrayList<>();
 
@@ -111,18 +115,18 @@ public class Main {
                 return asts -> {
                     AST target = asts.get(0);
 
-                    Hashtable<String, AST> table = new Hashtable<>();
+                    Hashtable<Object, AST> table = new Hashtable<>();
 
                     for(int i = 1; i < asts.size(); i += 2) {
-                        String key = asts.get(i).accept(new ASTVisitor<String>() {
+                        Object key = asts.get(i).accept(new ASTVisitor<Object>() {
                             @Override
-                            public String visitProgram(List<AST> expressions) {
+                            public Object visitProgram(List<AST> expressions) {
                                 return null;
                             }
 
                             @Override
-                            public String visitInteger(int value) {
-                                return null;
+                            public Integer visitInteger(int value) {
+                                return value;
                             }
 
                             @Override
@@ -131,27 +135,27 @@ public class Main {
                             }
 
                             @Override
-                            public String visitVariableDefinition(boolean isDeclaration, String id, AST value) {
+                            public Object visitVariableDefinition(boolean isDeclaration, String id, AST value) {
                                 return null;
                             }
 
                             @Override
-                            public String visitEnvironmentMessage(String selector, List<AST> args) {
+                            public Object visitEnvironmentMessage(String selector, List<AST> args) {
                                 return null;
                             }
 
                             @Override
-                            public String visitSpawn(AST environment, List<AST> expressions) {
+                            public Object visitSpawn(AST environment, List<AST> expressions) {
                                 return null;
                             }
 
                             @Override
-                            public String visitVariableUsage(String id) {
+                            public Object visitVariableUsage(String id) {
                                 return null;
                             }
 
                             @Override
-                            public String visitMessageSend(AST receiver, String selector, List<AST> args) {
+                            public Object visitMessageSend(AST receiver, String selector, List<AST> args) {
                                 return null;
                             }
                         });
@@ -404,7 +408,7 @@ public class Main {
             }
 
             @Override
-            public Object visitMatch(AST target, Map<String, AST> table) {
+            public Object visitMatch(AST target, Map<Object, AST> table) {
                 pushFrame(key -> {
                     AST then = table.get(key);
                     then.accept(this);
