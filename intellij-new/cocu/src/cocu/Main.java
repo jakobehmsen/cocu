@@ -7,6 +7,7 @@ import javafx.util.Pair;
 
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -28,10 +29,13 @@ public class Main {
         T visitReceive();
         T visitReply(AST envelope, AST value);
         T visitMatch(AST target, Map<Object, AST> table);
+        T visitSignal(AST astSignal);
+        T visitResumeWith(AST astContext, AST astSignal);
     }
 
     private static class Spawned {
-        public Consumer<Object> responseHandler;
+        //public Consumer<Object> responseHandler;
+        public EvalFrame frame;
         public Runnable yielder;
         public Hashtable<String, Object> variables = new Hashtable<>();
     }
@@ -65,6 +69,31 @@ public class Main {
         }
     }
 
+    private static class SignalHandler {
+        public SendFrame handlerFrame;
+        public BiConsumer<SendFrame, Object> handler;
+
+        public SignalHandler(SendFrame handlerFrame, BiConsumer<SendFrame, Object> handler) {
+            this.handlerFrame = handlerFrame;
+            this.handler = handler;
+        }
+
+        //void handleSignal(EvalFrame context, Object signal);
+    }
+
+    private static class EvalFrame {
+        public EvalFrame outer;
+
+        public EvalFrame(EvalFrame outer, Consumer<Object> responseHandler, SignalHandler signalHandler) {
+            this.outer = outer;
+            this.responseHandler = responseHandler;
+            this.signalHandler = signalHandler;
+        }
+
+        public Consumer<Object> responseHandler;
+        public SignalHandler signalHandler;
+    }
+
     private static List<String> splitByCamelCase(String str) {
         int[] capIndexes =
             IntStream.concat(
@@ -85,10 +114,11 @@ public class Main {
     public static void main(String[] args) {
         Parser parser = new Parser();
         String src = Arrays.asList(
-            "match: 100",
+            "signal: \"An error\""
+            /*"match: 100",
             "    Case: 2 Then' 1",
             "    Case: \"aMsg2\" Then' 2",
-            "    Case: 100 Then' 200"
+            "    Case: 100 Then' 200"*/
             /*"var myObject = #{",
             "    var envelope = receive",
             "    reply: envelope, \"A reply\"",
@@ -109,7 +139,7 @@ public class Main {
 
         allMacros.add(x -> {
             List<String> split = splitByCamelCase(x);
-            if(split.get(0).equals("match")) {
+            if (split.get(0).equals("match")) {
                 // Check whether only CaseThen pairs proceeds
 
                 return asts -> {
@@ -117,7 +147,7 @@ public class Main {
 
                     Hashtable<Object, AST> table = new Hashtable<>();
 
-                    for(int i = 1; i < asts.size(); i += 2) {
+                    for (int i = 1; i < asts.size(); i += 2) {
                         Object key = asts.get(i).accept(new ASTVisitor<Object>() {
                             @Override
                             public Object visitProgram(List<AST> expressions) {
@@ -198,9 +228,26 @@ public class Main {
             }
         });
 
+        indexedMacros.put("signal", asts -> new SpecialAST() {
+            @Override
+            public <T> T acceptSpecial(SpecialASTVisitor<? extends T> visitor) {
+                return visitor.visitSignal(asts.get(0));
+            }
+        });
+
+        indexedMacros.put("resumeWith", asts -> new SpecialAST() {
+            @Override
+            public <T> T acceptSpecial(SpecialASTVisitor<? extends T> visitor) {
+                return visitor.visitResumeWith(asts.get(0), asts.get(1));
+            }
+        });
+
         Spawned root = new Spawned();
-        root.responseHandler = value ->
-            System.out.println("Result: " + value);
+        root.frame = new EvalFrame(null,
+            value -> System.out.println("Result: " + value),
+            new SignalHandler(null, (context, signal) -> System.out.println("Signal: " + signal))
+        );
+
         root.yielder = () -> {
         };
 
@@ -213,15 +260,17 @@ public class Main {
             private void pushFrame(Consumer<Object> newResponseHandler) {
                 SendFrame sendFrame = this.sendFrame;
 
-                Consumer<Object> outerResponseHandler = sendFrame.receiver.responseHandler;
-                sendFrame.receiver.responseHandler = o -> {
-                    sendFrame.receiver.responseHandler = outerResponseHandler;
-                    newResponseHandler.accept(o);
-                };
+                sendFrame.receiver.frame = new EvalFrame(
+                    sendFrame.receiver.frame,
+                    newResponseHandler,
+                    sendFrame.receiver.frame.signalHandler
+                );
             }
 
             private void popFrame(Object result) {
-                sendFrame.receiver.responseHandler.accept(result);
+                Consumer<Object> responseHandler = sendFrame.receiver.frame.responseHandler;
+                sendFrame.receiver.frame = sendFrame.receiver.frame.outer;
+                responseHandler.accept(result);
             }
 
             @Override
@@ -335,10 +384,10 @@ public class Main {
                 popFrame(new Envelope(sender, null, (String) message));
             }
 
-            private void respond(Object result) {
-                SendFrame sender = this.sendFrame;
-                this.sendFrame = sender;
-                this.sendFrame.receiver.responseHandler.accept(result);
+            private void signal(Object signal) {
+                SendFrame signalFrame = sendFrame;
+                sendFrame = sendFrame.receiver.frame.signalHandler.handlerFrame;
+                signalFrame.receiver.frame.signalHandler.handler.accept(signalFrame, signal);
             }
 
             @Override
@@ -395,7 +444,7 @@ public class Main {
                         sendFrame.receiver.yielder = () -> {
                             SendFrame sender = ((Envelope) envelopeValue).sender;
                             this.sendFrame = sender;
-                            this.sendFrame.receiver.responseHandler.accept(valueValue);
+                            popFrame(valueValue);
                         };
 
                         popFrame(value);
@@ -414,6 +463,31 @@ public class Main {
                     then.accept(this);
                 });
                 target.accept(this);
+
+                return null;
+            }
+
+            @Override
+            public Object visitSignal(AST astSignal) {
+                pushFrame(signal -> {
+                    signal(signal);
+                });
+                astSignal.accept(this);
+
+                return null;
+            }
+
+            @Override
+            public Object visitResumeWith(AST astContext, AST astValue) {
+                pushFrame(context -> {
+                    pushFrame(value -> {
+                        sendFrame = (SendFrame)context;
+
+                        popFrame(value);
+                    });
+                    astValue.accept(this);
+                });
+                astContext.accept(this);
 
                 return null;
             }
