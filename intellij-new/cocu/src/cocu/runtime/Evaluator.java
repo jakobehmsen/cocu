@@ -1,6 +1,7 @@
 package cocu.runtime;
 
 import cocu.lang.ast.AST;
+import cocu.lang.ast.ASTVisitor;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -8,9 +9,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
-public class Evaluator implements SpecialASTVisitor<Object> {
-    private SendFrame sendFrame;
-    private ArrayList<Function<String, Function<List<AST>, SpecialAST>>> allMacros;
+public class Evaluator implements ASTVisitor<Object> {
+    public SendFrame sendFrame;
+    private ArrayList<Function<String, BiConsumer<Evaluator, List<AST>>>> allMacros;
 
     public Evaluator(Spawned root) {
         sendFrame = new SendFrame(
@@ -21,7 +22,7 @@ public class Evaluator implements SpecialASTVisitor<Object> {
         allMacros = MacroUtil.createMacros();
     }
 
-    private void pushFrame(Consumer<Object> newResponseHandler) {
+    public void pushFrame(Consumer<Object> newResponseHandler) {
         SendFrame sendFrame = this.sendFrame;
 
         sendFrame.receiver.frame = new EvalFrame(
@@ -31,7 +32,7 @@ public class Evaluator implements SpecialASTVisitor<Object> {
         );
     }
 
-    private void popFrame(Object result) {
+    public void popFrame(Object result) {
         Consumer<Object> responseHandler = sendFrame.receiver.frame.responseHandler;
         sendFrame.receiver.frame = sendFrame.receiver.frame.outer;
         responseHandler.accept(result);
@@ -104,17 +105,15 @@ public class Evaluator implements SpecialASTVisitor<Object> {
 
     @Override
     public Object visitEnvironmentMessage(String selector, List<AST> args) {
-        Optional<Function<List<AST>, SpecialAST>> applicableMacro =
+        Optional<BiConsumer<Evaluator, List<AST>>> applicableMacro =
             allMacros.stream()
                 .map(x -> x.apply(selector))
                 .filter(x -> x != null)
                 .findFirst();
 
         if (applicableMacro.isPresent()) {
-            Function<List<AST>, SpecialAST> macro = applicableMacro.get();
-            SpecialAST replacement = macro.apply(args);
-
-            replacement.acceptSpecial(this);
+            BiConsumer<Evaluator, List<AST>> macro = applicableMacro.get();
+            macro.accept(this, args);
         }
 
         // Invoke environment
@@ -171,6 +170,8 @@ public class Evaluator implements SpecialASTVisitor<Object> {
             sendFrame = outerSendFrame;
             popFrame(receiver);
         };
+        // Forward signal handler
+        receiver.frame = new EvalFrame(null, null, outerSendFrame.receiver.frame.signalHandler);
 
         sendFrame = new SendFrame(
             receiver,
@@ -200,23 +201,20 @@ public class Evaluator implements SpecialASTVisitor<Object> {
         return null;
     }
 
-    // Specials
-    @Override
-    public Object visitQuote(AST ast) {
+    // Specials helpers
+    public Object quote(AST ast) {
         popFrame(ast);
 
         return null;
     }
 
-    @Override
-    public Object visitReceive() {
+    public Object receive() {
         sendFrame.receiver.yielder.run();
 
         return null;
     }
 
-    @Override
-    public Object visitReply(AST envelope, AST value) {
+    public Object reply(AST envelope, AST value) {
         pushFrame(envelopeValue -> {
             pushFrame(valueValue -> {
                 sendFrame.receiver.yielder = () -> {
@@ -234,8 +232,7 @@ public class Evaluator implements SpecialASTVisitor<Object> {
         return null;
     }
 
-    @Override
-    public Object visitMatch(AST target, Map<Object, AST> table) {
+    public Object match(AST target, Map<Object, AST> table) {
         pushFrame(key -> {
             AST then = table.get(key);
             then.accept(this);
@@ -245,24 +242,18 @@ public class Evaluator implements SpecialASTVisitor<Object> {
         return null;
     }
 
-    @Override
-    public Object visitSignal(AST astSignal) {
+    public Object signal(AST astSignal) {
         pushFrame(signal -> {
-            signal(signal);
+            SendFrame signalFrame = sendFrame;
+            sendFrame = sendFrame.receiver.frame.signalHandler.handlerFrame;
+            signalFrame.receiver.frame.signalHandler.handler.accept(signalFrame, signal);
         });
         astSignal.accept(this);
 
         return null;
     }
 
-    private void signal(Object signal) {
-        SendFrame signalFrame = sendFrame;
-        sendFrame = sendFrame.receiver.frame.signalHandler.handlerFrame;
-        signalFrame.receiver.frame.signalHandler.handler.accept(signalFrame, signal);
-    }
-
-    @Override
-    public Object visitResumeWith(AST astContext, AST astValue) {
+    public Object resumeWith(AST astContext, AST astValue) {
         pushFrame(context -> {
             pushFrame(value -> {
                 sendFrame = (SendFrame) context;
@@ -276,7 +267,7 @@ public class Evaluator implements SpecialASTVisitor<Object> {
         return null;
     }
 
-    private void apply(List<Object> arguments, Closure closure) {
+    public void apply(List<Object> arguments, Closure closure) {
         // Allocate inner environment bound to current environment
         Environment applicationEnvironment = new Environment(closure.environment);
         pushFrame(result -> {
@@ -294,8 +285,7 @@ public class Evaluator implements SpecialASTVisitor<Object> {
         closure.body.accept(this);
     }
 
-    @Override
-    public Object visitTryCatch(AST astBody, Function<Environment, Closure> closureConstructor) {
+    public Object tryCatch(AST astBody, Function<Environment, Closure> closureConstructor) {
         Closure closure = closureConstructor.apply(sendFrame.receiver.environment);
 
         EvalFrame signalHandlerFrame = sendFrame.receiver.frame;
@@ -312,5 +302,4 @@ public class Evaluator implements SpecialASTVisitor<Object> {
 
         return null;
     }
-
 }

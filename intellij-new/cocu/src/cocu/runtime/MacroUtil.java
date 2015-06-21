@@ -6,6 +6,7 @@ import cocu.lang.ast.ASTAdapter;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -28,17 +29,17 @@ public class MacroUtil {
         }).collect(Collectors.toList());
     }
 
-    public static ArrayList<Function<String, Function<List<AST>, SpecialAST>>> createMacros() {
-        ArrayList<Function<String, Function<List<AST>, SpecialAST>>> allMacros = new ArrayList<>();
+    public static ArrayList<Function<String, BiConsumer<Evaluator, List<AST>>>> createMacros() {
+        ArrayList<Function<String, BiConsumer<Evaluator, List<AST>>>> allMacros = new ArrayList<>();
 
-        Hashtable<String, Function<List<AST>, SpecialAST>> indexedMacros = new Hashtable<>();
+        Hashtable<String, BiConsumer<Evaluator, List<AST>>> indexedMacros = new Hashtable<>();
 
         allMacros.add(x -> {
             List<String> split = splitByCamelCase(x);
             if (split.get(0).equals("match")) {
                 // Check whether only CaseThen pairs proceeds
 
-                return asts -> {
+                return (evaluator, asts) -> {
                     AST target = asts.get(0);
 
                     Hashtable<Object, AST> table = new Hashtable<>();
@@ -55,16 +56,16 @@ public class MacroUtil {
                                 return value;
                             }
                         });
-                        AST then = asts.get(i + 1);
+                        AST then = asts.get(i + 1).accept(new ASTAdapter<AST>() {
+                            @Override
+                            public AST visitClosure(List<String> parameters, AST body) {
+                                return body;
+                            }
+                        });
                         table.put(key, then);
                     }
 
-                    return new SpecialAST() {
-                        @Override
-                        public <T> T acceptSpecial(SpecialASTVisitor<? extends T> visitor) {
-                            return visitor.visitMatch(target, table);
-                        }
-                    };
+                    evaluator.match(target, table);
                 };
             }
 
@@ -73,60 +74,46 @@ public class MacroUtil {
 
         allMacros.add(x -> indexedMacros.get(x));
 
-        indexedMacros.put("quote", asts -> new SpecialAST() {
-            @Override
-            public <T> T acceptSpecial(SpecialASTVisitor<? extends T> visitor) {
-                return visitor.visitQuote(asts.get(0));
-            }
+        indexedMacros.put("quote", (evaluator, asts) -> evaluator.quote(asts.get(0)));
+
+        indexedMacros.put("receive", (evaluator, asts) -> evaluator.receive());
+
+        indexedMacros.put("reply", (evaluator, asts) -> {
+            AST envelope = asts.get(0);
+            AST value = asts.get(1);
+
+            evaluator.reply(envelope, value);
         });
 
-        indexedMacros.put("receive", asts -> new SpecialAST() {
-            @Override
-            public <T> T acceptSpecial(SpecialASTVisitor<? extends T> visitor) {
-                return visitor.visitReceive();
-            }
+        indexedMacros.put("signal", (evaluator, asts) -> {
+            AST astSignal = asts.get(0);
+
+            evaluator.signal(astSignal);
         });
 
-        indexedMacros.put("reply", asts -> new SpecialAST() {
-            @Override
-            public <T> T acceptSpecial(SpecialASTVisitor<? extends T> visitor) {
-                return visitor.visitReply(asts.get(0), asts.get(1));
-            }
+        indexedMacros.put("resumeWith", (evaluator, asts) -> {
+            AST astContext = asts.get(0);
+            AST astValue = asts.get(1);
+
+            evaluator.resumeWith(astContext, astValue);
         });
 
-        indexedMacros.put("signal", asts -> new SpecialAST() {
-            @Override
-            public <T> T acceptSpecial(SpecialASTVisitor<? extends T> visitor) {
-                return visitor.visitSignal(asts.get(0));
-            }
-        });
+        indexedMacros.put("tryCatch", (evaluator, asts) -> {
+            AST tryBody = asts.get(0).accept(new ASTAdapter<AST>() {
+                @Override
+                public AST visitClosure(List<String> parameters, AST body) {
+                    return body;
+                }
+            });
 
-        indexedMacros.put("resumeWith", asts -> new SpecialAST() {
-            @Override
-            public <T> T acceptSpecial(SpecialASTVisitor<? extends T> visitor) {
-                return visitor.visitResumeWith(asts.get(0), asts.get(1));
-            }
-        });
+            Function<Environment, Closure> closureConstructor = asts.get(1).accept(new ASTAdapter<Function<Environment, Closure>>() {
+                @Override
+                public Function<Environment, Closure> visitClosure(List<String> parameters, AST body) {
+                    return environment -> new Closure(parameters, body, environment);
+                }
+            });
 
-        indexedMacros.put("tryCatch", asts -> new SpecialAST() {
-            @Override
-            public <T> T acceptSpecial(SpecialASTVisitor<? extends T> visitor) {
-                AST tryBody = asts.get(0).accept(new ASTAdapter<AST>() {
-                    @Override
-                    public AST visitClosure(List<String> parameters, AST body) {
-                        return body;
-                    }
-                });
-
-                Function<Environment, Closure> closureConstructor = asts.get(1).accept(new ASTAdapter<Function<Environment, Closure>>() {
-                    @Override
-                    public Function<Environment, Closure> visitClosure(List<String> parameters, AST body) {
-                        return environment -> new Closure(parameters, body, environment);
-                    }
-                });
-
-                return visitor.visitTryCatch(tryBody, closureConstructor);
-            }
+            evaluator.tryCatch(tryBody, closureConstructor);
         });
 
         return allMacros;
