@@ -47,4 +47,9 @@ public class ASTAdapter<T> implements ASTVisitor<T> {
     public T visitClosure(List<String> parameters, AST body) {
         return null;
     }
+
+    @Override
+    public T visitGroup(List<AST> expressions) {
+        return null;
+    }
 }

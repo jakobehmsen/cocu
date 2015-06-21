@@ -32,10 +32,8 @@ public class Main {
     }
 
     private static class Spawned {
-        //public Consumer<Object> responseHandler;
         public EvalFrame frame;
         public Runnable yielder;
-        //public Hashtable<String, Object> variables = new Hashtable<>();
         public Environment environment = new Environment();
     }
 
@@ -52,15 +50,8 @@ public class Main {
     }
 
     private static class SendFrame {
-        //public Consumer<Object> responseHandler;
         public Spawned receiver;
         public SendFrame sender;
-
-        /*public SendFrame(Consumer<Object> responseHandler, SendFrame sender) {
-            this.receiver = new Spawned();
-            this.receiver.responseHandler = responseHandler;
-            this.sender = sender;
-        }*/
 
         public SendFrame(Spawned receiver, SendFrame sender) {
             this.receiver = receiver;
@@ -76,8 +67,6 @@ public class Main {
             this.handlerFrame = handlerFrame;
             this.handler = handler;
         }
-
-        //void handleSignal(EvalFrame context, Object signal);
     }
 
     private static class Closure {
@@ -100,9 +89,7 @@ public class Main {
             this.outer = outer;
         }
 
-        public Environment() {
-            this(null);
-        }
+        public Environment() { }
 
         public Object get(String name) {
             Object value = variables.get(name);
@@ -117,7 +104,7 @@ public class Main {
         }
 
         public void declare(String name, Object value) {
-
+            variables.put(name, value);
         }
 
         public void set(String name, Object value) {
@@ -166,7 +153,24 @@ public class Main {
             "try'\n" +
             "    signal: \"stuff\"\n" +
             "Catch' |aCtx aSignal|\n" +
-            "    (resume: aCtx With: \"some value\")"
+            "    (resume: aCtx With: \"Resumed with some value\")"
+
+            /*"var val = try'\n" +
+            "    signal: \"stuff\"\n" +
+            "Catch' |aCtx aSignal|\n" +
+            "    (resume: aCtx With: \"Resumed with some value\")" +
+            "val"*/
+
+            /*"try'\n" +
+            "    signal: \"stuff\"\n" +
+            "Catch' |aCtx aSignal|\n" +
+            "    \"Direct return of some value\""*/
+
+            /*"var val = try'\n" +
+            "    signal: \"stuff\"\n" +
+            "Catch' |aCtx aSignal|\n" +
+            "    \"Direct return of some value\"" +
+            "val"*/
 
             //"signal: \"An error\""
 
@@ -184,10 +188,11 @@ public class Main {
             "var firstReply = myObject.msg",
             "var secondReply = myObject.msg"*/
         ).stream().collect(Collectors.joining("\n"));
-        AST ast = parser.parse(src);
 
         System.out.println("Source:");
         System.out.println(src);
+
+        AST ast = parser.parse(src);
 
         ArrayList<Function<String, Function<List<AST>, SpecialAST>>> allMacros = new ArrayList<>();
 
@@ -325,7 +330,7 @@ public class Main {
                 if (value != null) {
                     pushFrame(result -> {
                         if (isDeclaration)
-                            sendFrame.receiver.environment.declare(id, value);
+                            sendFrame.receiver.environment.declare(id, result);
                         else
                             sendFrame.receiver.environment.set(id, result);
                         popFrame(result);
@@ -444,12 +449,6 @@ public class Main {
                 popFrame(new Envelope(sender, null, (String) message));
             }
 
-            private void signal(Object signal) {
-                SendFrame signalFrame = sendFrame;
-                sendFrame = sendFrame.receiver.frame.signalHandler.handlerFrame;
-                signalFrame.receiver.frame.signalHandler.handler.accept(signalFrame, signal);
-            }
-
             @Override
             public Object visitSpawn(AST environment, List<AST> expressions) {
                 Spawned receiver = new Spawned();
@@ -480,6 +479,13 @@ public class Main {
                     // Implicitly yield control
                     sendFrame.receiver.yielder.run();
                 }
+            }
+
+            @Override
+            public Object visitGroup(List<AST> expressions) {
+                evaluateExpressionsReturnLast(expressions, 0);
+
+                return null;
             }
 
             // Specials
@@ -537,6 +543,12 @@ public class Main {
                 return null;
             }
 
+            private void signal(Object signal) {
+                SendFrame signalFrame = sendFrame;
+                sendFrame = sendFrame.receiver.frame.signalHandler.handlerFrame;
+                signalFrame.receiver.frame.signalHandler.handler.accept(signalFrame, signal);
+            }
+
             @Override
             public Object visitResumeWith(AST astContext, AST astValue) {
                 pushFrame(context -> {
@@ -566,6 +578,7 @@ public class Main {
                     Object argument = arguments.get(x);
                     applicationEnvironment.declare(name, argument);
                 });
+                sendFrame.receiver.environment = applicationEnvironment;
                 closure.body.accept(this);
             }
 
@@ -573,7 +586,11 @@ public class Main {
             public Object visitTryCatch(AST astBody, Function<Environment, Closure> closureConstructor) {
                 Closure closure = closureConstructor.apply(sendFrame.receiver.environment);
 
+                EvalFrame signalHandlerFrame = sendFrame.receiver.frame;
                 BiConsumer<SendFrame, Object> signalHandler = (context, signal) -> {
+                    // Reset to to signal handler frame
+                    // - otherwise, responseHandler can be invoked twice
+                    sendFrame.receiver.frame = signalHandlerFrame;
                     apply(Arrays.asList(context, signal), closure);
                 };
 

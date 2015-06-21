@@ -40,9 +40,31 @@ public class Parser {
         return antlr4ToAst(programCtx);
     }
 
+    private static class MetaEnvironment {
+        public MetaEnvironment outer;
+        public HashSet<String> variables = new HashSet<>();
+
+        public MetaEnvironment(MetaEnvironment outer) {
+            this.outer = outer;
+        }
+
+        public MetaEnvironment() { }
+
+        public void declare(String name) {
+            variables.add(name);
+        }
+
+        public boolean isDeclared(String name) {
+            if(variables.contains(name))
+                return true;
+
+            return outer != null ? outer.isDeclared(name) : false;
+        }
+    }
+
     private AST antlr4ToAst(ParserRuleContext ctx) {
         return ctx.accept(new CocuBaseVisitor<AST>() {
-            private HashSet<String> declaredVariables = new HashSet<String>();
+            private MetaEnvironment environment = new MetaEnvironment();
 
             @Override
             public AST visitProgram(@NotNull CocuParser.ProgramContext ctx) {
@@ -76,8 +98,6 @@ public class Parser {
 
                 // Process chain
                 return visitMessageChain(receiver, chain);
-
-                //return receiver;
             }
 
             private AST visitMessageChain(AST receiver, List<ParserRuleContext> chain) {
@@ -150,10 +170,15 @@ public class Parser {
             private AST getMultiMessageArgCtx(boolean asClosure, CocuParser.MultiKeyMessageArgContext ctx) {
                 List<String> parameters = ctx.behaviorParams().id().stream().map(x -> x.getText()).collect(Collectors.toList());
 
+                if(asClosure) {
+                    environment = new MetaEnvironment(environment);
+                    parameters.forEach(x -> environment.declare(x));
+                }
+
                 AST argument;
-                if (ctx.selfSingleKeyMessage() != null)
+                if (ctx.selfSingleKeyMessage() != null) {
                     argument = ctx.selfSingleKeyMessage().accept(this);
-                else {
+                } else {
                     AST receiver = ctx.multiKeyMessageArgReceiver().accept(this);
 
                     // Process chain
@@ -162,6 +187,8 @@ public class Parser {
                 }
 
                 if(asClosure) {
+                    environment = environment.outer;
+
                     return new AST() {
                         @Override
                         public <T> T accept(ASTVisitor<? extends T> visitor) {
@@ -189,7 +216,7 @@ public class Parser {
             public AST visitAccess(@NotNull CocuParser.AccessContext ctx) {
                 String selector = ctx.getText();
 
-                if (declaredVariables.contains(selector)) {
+                if (environment.isDeclared(selector)) {
                     return new AST() {
                         @Override
                         public <T> T accept(ASTVisitor<? extends T> visitor) {
@@ -209,7 +236,7 @@ public class Parser {
             public AST visitVariableDeclaration(@NotNull CocuParser.VariableDeclarationContext ctx) {
                 String id = ctx.id().getText();
 
-                declaredVariables.add(id);
+                environment.declare(id);
 
                 AST value = ctx.expression() != null ? ctx.expression().accept(this) : null;
 
@@ -256,6 +283,18 @@ public class Parser {
                     @Override
                     public <T> T accept(ASTVisitor<? extends T> visitor) {
                         return visitor.visitSpawn(environment, expressions);
+                    }
+                };
+            }
+
+            @Override
+            public AST visitGrouping(@NotNull CocuParser.GroupingContext ctx) {
+                List<AST> expressions = ctx.expression().stream().map(x -> x.accept(this)).collect(Collectors.toList());
+
+                return new AST() {
+                    @Override
+                    public <T> T accept(ASTVisitor<? extends T> visitor) {
+                        return visitor.visitGroup(expressions);
                     }
                 };
             }

@@ -20,4 +20,6 @@ public interface ASTVisitor<T> {
     T visitMessageSend(AST receiver, String selector, List<AST> args);
 
     T visitClosure(List<String> parameters, AST body);
+
+    T visitGroup(List<AST> expressions);
 }
