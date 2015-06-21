@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="78741b3e-01f2-4f3d-a4a0-3bed8c4272f9" name="Default" comment="Continued work on signaling.">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/cocu/lang/ast/ASTAdapter.java" afterPath="$PROJECT_DIR$/src/cocu/lang/ast/ASTAdapter.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/cocu/lang/ast/ASTVisitor.java" afterPath="$PROJECT_DIR$/src/cocu/lang/ast/ASTVisitor.java" />
+    <list default="true" id="78741b3e-01f2-4f3d-a4a0-3bed8c4272f9" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/cocu/runtime/Closure.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/cocu/runtime/Envelope.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/cocu/runtime/Environment.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/cocu/runtime/EvalFrame.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/cocu/runtime/Evaluator.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/cocu/runtime/MacroUtil.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/cocu/runtime/SendFrame.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/cocu/runtime/SignalHandler.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/cocu/runtime/Spawned.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/cocu/runtime/SpecialAST.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/cocu/runtime/SpecialASTVisitor.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/cocu/Main.java" afterPath="$PROJECT_DIR$/src/cocu/Main.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/cocu/lang/Parser.java" afterPath="$PROJECT_DIR$/src/cocu/lang/Parser.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="cocu.iws" />
@@ -28,253 +36,14 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Parser.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cocu/lang/Parser.java">
+      <file leaf-file-name="Evaluator.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cocu/runtime/Evaluator.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="271" column="0" selection-start-line="271" selection-start-column="0" selection-end-line="271" selection-end-column="0" />
+              <caret line="282" column="70" selection-start-line="282" selection-start-column="70" selection-end-line="282" selection-end-column="70" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#1498#1499#0" expanded="true" />
-                <element signature="e#1540#1541#0" expanded="true" />
-                <element signature="e#1622#1623#0" expanded="true" />
-                <element signature="e#1665#1666#0" expanded="true" />
-                <element signature="e#2414#2415#0" expanded="true" />
-                <element signature="e#2502#2503#0" expanded="true" />
-                <element signature="e#10146#10147#0" expanded="true" />
-                <element signature="e#10228#10229#0" expanded="true" />
-                <element signature="e#10795#10796#0" expanded="true" />
-                <element signature="e#11793#11794#0" expanded="true" />
-                <element signature="e#11879#11880#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CocuParser.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cocu/lang/antlr4/CocuParser.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="1254" column="0" selection-start-line="1254" selection-start-column="0" selection-end-line="1254" selection-end-column="0" />
-              <folding>
-                <element signature="e#4173#4174#0" expanded="true" />
-                <element signature="e#4229#4230#0" expanded="true" />
-                <element signature="e#5626#5627#0" expanded="true" />
-                <element signature="e#5691#5692#0" expanded="true" />
-                <element signature="e#12284#12285#0" expanded="true" />
-                <element signature="e#12339#12340#0" expanded="true" />
-                <element signature="e#12601#12602#0" expanded="true" />
-                <element signature="e#12658#12659#0" expanded="true" />
-                <element signature="e#24384#24385#0" expanded="true" />
-                <element signature="e#24441#24442#0" expanded="true" />
-                <element signature="e#33375#33376#0" expanded="true" />
-                <element signature="e#33412#33413#0" expanded="true" />
-                <element signature="e#34980#34981#0" expanded="true" />
-                <element signature="e#35025#35026#0" expanded="true" />
-                <element signature="e#35108#35109#0" expanded="true" />
-                <element signature="e#35145#35146#0" expanded="true" />
-                <element signature="e#36796#36797#0" expanded="true" />
-                <element signature="e#36857#36858#0" expanded="true" />
-                <element signature="e#37490#37491#0" expanded="true" />
-                <element signature="e#37527#37528#0" expanded="true" />
-                <element signature="e#39282#39283#0" expanded="true" />
-                <element signature="e#39333#39334#0" expanded="true" />
-                <element signature="e#40463#40464#0" expanded="true" />
-                <element signature="e#40520#40521#0" expanded="true" />
-                <element signature="e#40634#40635#0" expanded="true" />
-                <element signature="e#40693#40694#0" expanded="true" />
-                <element signature="e#40737#40738#0" expanded="true" />
-                <element signature="e#40795#40796#0" expanded="true" />
-                <element signature="e#40882#40883#0" expanded="true" />
-                <element signature="e#40919#40920#0" expanded="true" />
-                <element signature="e#42356#42357#0" expanded="true" />
-                <element signature="e#42419#42420#0" expanded="true" />
-                <element signature="e#42471#42472#0" expanded="true" />
-                <element signature="e#42533#42534#0" expanded="true" />
-                <element signature="e#42583#42584#0" expanded="true" />
-                <element signature="e#42644#42645#0" expanded="true" />
-                <element signature="e#42702#42703#0" expanded="true" />
-                <element signature="e#42767#42768#0" expanded="true" />
-                <element signature="e#42852#42853#0" expanded="true" />
-                <element signature="e#42889#42890#0" expanded="true" />
-                <element signature="e#44336#44337#0" expanded="true" />
-                <element signature="e#44391#44392#0" expanded="true" />
-                <element signature="e#44425#44426#0" expanded="true" />
-                <element signature="e#44478#44479#0" expanded="true" />
-                <element signature="e#44514#44515#0" expanded="true" />
-                <element signature="e#44568#44569#0" expanded="true" />
-                <element signature="e#44602#44603#0" expanded="true" />
-                <element signature="e#44655#44656#0" expanded="true" />
-                <element signature="e#44695#44696#0" expanded="true" />
-                <element signature="e#44751#44752#0" expanded="true" />
-                <element signature="e#44819#44820#0" expanded="true" />
-                <element signature="e#44856#44857#0" expanded="true" />
-                <element signature="e#46330#46331#0" expanded="true" />
-                <element signature="e#46393#46394#0" expanded="true" />
-                <element signature="e#46477#46478#0" expanded="true" />
-                <element signature="e#46514#46515#0" expanded="true" />
-                <element signature="e#47496#47497#0" expanded="true" />
-                <element signature="e#47561#47562#0" expanded="true" />
-                <element signature="e#47857#47858#0" expanded="true" />
-                <element signature="e#47894#47895#0" expanded="true" />
-                <element signature="e#49022#49023#0" expanded="true" />
-                <element signature="e#49059#49060#0" expanded="true" />
-                <element signature="e#50022#50023#0" expanded="true" />
-                <element signature="e#50077#50078#0" expanded="true" />
-                <element signature="e#50151#50152#0" expanded="true" />
-                <element signature="e#50188#50189#0" expanded="true" />
-                <element signature="e#51172#51173#0" expanded="true" />
-                <element signature="e#51229#51230#0" expanded="true" />
-                <element signature="e#51376#51377#0" expanded="true" />
-                <element signature="e#51413#51414#0" expanded="true" />
-                <element signature="e#52457#52458#0" expanded="true" />
-                <element signature="e#52520#52521#0" expanded="true" />
-                <element signature="e#52597#52598#0" expanded="true" />
-                <element signature="e#52634#52635#0" expanded="true" />
-                <element signature="e#53580#53581#0" expanded="true" />
-                <element signature="e#53635#53636#0" expanded="true" />
-                <element signature="e#53969#53970#0" expanded="true" />
-                <element signature="e#54035#54036#0" expanded="true" />
-                <element signature="e#54115#54116#0" expanded="true" />
-                <element signature="e#54152#54153#0" expanded="true" />
-                <element signature="e#55598#55599#0" expanded="true" />
-                <element signature="e#55655#55656#0" expanded="true" />
-                <element signature="e#55769#55770#0" expanded="true" />
-                <element signature="e#55828#55829#0" expanded="true" />
-                <element signature="e#55872#55873#0" expanded="true" />
-                <element signature="e#55930#55931#0" expanded="true" />
-                <element signature="e#56015#56016#0" expanded="true" />
-                <element signature="e#56052#56053#0" expanded="true" />
-                <element signature="e#57403#57404#0" expanded="true" />
-                <element signature="e#57465#57466#0" expanded="true" />
-                <element signature="e#57515#57516#0" expanded="true" />
-                <element signature="e#57576#57577#0" expanded="true" />
-                <element signature="e#57659#57660#0" expanded="true" />
-                <element signature="e#57696#57697#0" expanded="true" />
-                <element signature="e#58971#58972#0" expanded="true" />
-                <element signature="e#59028#59029#0" expanded="true" />
-                <element signature="e#59148#59149#0" expanded="true" />
-                <element signature="e#59204#59205#0" expanded="true" />
-                <element signature="e#59355#59356#0" expanded="true" />
-                <element signature="e#59392#59393#0" expanded="true" />
-                <element signature="e#60506#60507#0" expanded="true" />
-                <element signature="e#60561#60562#0" expanded="true" />
-                <element signature="e#60603#60604#0" expanded="true" />
-                <element signature="e#60660#60661#0" expanded="true" />
-                <element signature="e#60718#60719#0" expanded="true" />
-                <element signature="e#60783#60784#0" expanded="true" />
-                <element signature="e#60861#60862#0" expanded="true" />
-                <element signature="e#60898#60899#0" expanded="true" />
-                <element signature="e#61900#61901#0" expanded="true" />
-                <element signature="e#61954#61955#0" expanded="true" />
-                <element signature="e#61990#61991#0" expanded="true" />
-                <element signature="e#62044#62045#0" expanded="true" />
-                <element signature="e#62078#62079#0" expanded="true" />
-                <element signature="e#62131#62132#0" expanded="true" />
-                <element signature="e#62163#62164#0" expanded="true" />
-                <element signature="e#62215#62216#0" expanded="true" />
-                <element signature="e#62286#62287#0" expanded="true" />
-                <element signature="e#62323#62324#0" expanded="true" />
-                <element signature="e#63710#63711#0" expanded="true" />
-                <element signature="e#63747#63748#0" expanded="true" />
-                <element signature="e#64706#64707#0" expanded="true" />
-                <element signature="e#64743#64744#0" expanded="true" />
-                <element signature="e#65595#65596#0" expanded="true" />
-                <element signature="e#65650#65651#0" expanded="true" />
-                <element signature="e#65692#65693#0" expanded="true" />
-                <element signature="e#65749#65750#0" expanded="true" />
-                <element signature="e#65807#65808#0" expanded="true" />
-                <element signature="e#65872#65873#0" expanded="true" />
-                <element signature="e#65945#65946#0" expanded="true" />
-                <element signature="e#65982#65983#0" expanded="true" />
-                <element signature="e#67127#67128#0" expanded="true" />
-                <element signature="e#67188#67189#0" expanded="true" />
-                <element signature="e#67235#67236#0" expanded="true" />
-                <element signature="e#67292#67293#0" expanded="true" />
-                <element signature="e#67488#67489#0" expanded="true" />
-                <element signature="e#67544#67545#0" expanded="true" />
-                <element signature="e#67615#67616#0" expanded="true" />
-                <element signature="e#67652#67653#0" expanded="true" />
-                <element signature="e#69032#69033#0" expanded="true" />
-                <element signature="e#69081#69082#0" expanded="true" />
-                <element signature="e#69191#69192#0" expanded="true" />
-                <element signature="e#69235#69236#0" expanded="true" />
-                <element signature="e#69267#69268#0" expanded="true" />
-                <element signature="e#69315#69316#0" expanded="true" />
-                <element signature="e#69393#69394#0" expanded="true" />
-                <element signature="e#69430#69431#0" expanded="true" />
-                <element signature="e#70766#70767#0" expanded="true" />
-                <element signature="e#70823#70824#0" expanded="true" />
-                <element signature="e#71019#71020#0" expanded="true" />
-                <element signature="e#71075#71076#0" expanded="true" />
-                <element signature="e#71214#71215#0" expanded="true" />
-                <element signature="e#71251#71252#0" expanded="true" />
-                <element signature="e#72922#72923#0" expanded="true" />
-                <element signature="e#72959#72960#0" expanded="true" />
-                <element signature="e#73821#73822#0" expanded="true" />
-                <element signature="e#73870#73871#0" expanded="true" />
-                <element signature="e#74022#74023#0" expanded="true" />
-                <element signature="e#74059#74060#0" expanded="true" />
-                <element signature="e#75112#75113#0" expanded="true" />
-                <element signature="e#75149#75150#0" expanded="true" />
-                <element signature="e#76100#76101#0" expanded="true" />
-                <element signature="e#76160#76161#0" expanded="true" />
-                <element signature="e#76186#76187#0" expanded="true" />
-                <element signature="e#76235#76236#0" expanded="true" />
-                <element signature="e#76285#76286#0" expanded="true" />
-                <element signature="e#76346#76347#0" expanded="true" />
-                <element signature="e#76418#76419#0" expanded="true" />
-                <element signature="e#76455#76456#0" expanded="true" />
-                <element signature="e#77800#77801#0" expanded="true" />
-                <element signature="e#77837#77838#0" expanded="true" />
-                <element signature="e#78932#78933#0" expanded="true" />
-                <element signature="e#78969#78970#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ParserRuleContext.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/libs/antlr-4.5-rc-1-complete.jar!/org/antlr/v4/runtime/ParserRuleContext.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-7.24">
-              <caret line="174" column="0" selection-start-line="174" selection-start-column="0" selection-end-line="174" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AbstractParseTreeVisitor.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/libs/antlr-4.5-rc-1-complete.jar!/org/antlr/v4/runtime/tree/AbstractParseTreeVisitor.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.16">
-              <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
-              <folding>
-                <element signature="e#1102#1103#0" expanded="true" />
-                <element signature="e#1145#1146#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TerminalNodeImpl.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/libs/antlr-4.5-rc-1-complete.jar!/org/antlr/v4/runtime/tree/TerminalNodeImpl.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-10.56">
-              <caret line="52" column="0" selection-start-line="52" selection-start-column="0" selection-end-line="52" selection-end-column="0" />
-              <folding>
-                <element signature="e#1294#1295#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CocuBaseVisitor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cocu/lang/antlr4/CocuBaseVisitor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="372" column="0" selection-start-line="372" selection-start-column="0" selection-end-line="372" selection-end-column="0" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -282,65 +51,96 @@
       <file leaf-file-name="Main.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/cocu/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.20036764">
-              <caret line="152" column="12" selection-start-line="152" selection-start-column="12" selection-end-line="152" selection-end-column="12" />
+            <state vertical-scroll-proportion="-0.24816176">
+              <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#464#465#0" expanded="true" />
-                <element signature="e#529#530#0" expanded="true" />
-                <element signature="e#2679#2680#0" expanded="true" />
-                <element signature="e#2721#2722#0" expanded="true" />
-                <element signature="e#3071#3072#0" expanded="true" />
-                <element signature="e#3121#3122#0" expanded="true" />
-                <element signature="e#6752#6753#0" expanded="true" />
-                <element signature="e#6828#6829#0" expanded="true" />
-                <element signature="e#6937#6938#0" expanded="true" />
-                <element signature="e#7013#7014#0" expanded="true" />
-                <element signature="e#7992#7993#0" expanded="true" />
-                <element signature="e#8053#8054#0" expanded="true" />
-                <element signature="e#9200#9201#0" expanded="true" />
-                <element signature="e#9259#9260#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ASTAdapter.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cocu/lang/ast/ASTAdapter.java">
+      <file leaf-file-name="MacroUtil.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cocu/runtime/MacroUtil.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="52" column="8" selection-start-line="52" selection-start-column="8" selection-end-line="52" selection-end-column="20" />
+              <caret line="12" column="24" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
               <folding>
-                <element signature="e#165#166#0" expanded="true" />
-                <element signature="e#192#193#0" expanded="true" />
-                <element signature="e#246#247#0" expanded="true" />
-                <element signature="e#273#274#0" expanded="true" />
-                <element signature="e#329#330#0" expanded="true" />
-                <element signature="e#356#357#0" expanded="true" />
-                <element signature="e#455#456#0" expanded="true" />
-                <element signature="e#482#483#0" expanded="true" />
-                <element signature="e#569#570#0" expanded="true" />
-                <element signature="e#596#597#0" expanded="true" />
-                <element signature="e#677#678#0" expanded="true" />
-                <element signature="e#704#705#0" expanded="true" />
-                <element signature="e#764#765#0" expanded="true" />
-                <element signature="e#791#792#0" expanded="true" />
-                <element signature="e#885#886#0" expanded="true" />
-                <element signature="e#912#913#0" expanded="true" />
-                <element signature="e#990#991#0" expanded="true" />
-                <element signature="e#1017#1018#0" expanded="true" />
-                <element signature="e#1081#1082#0" expanded="true" />
-                <element signature="e#1108#1109#0" expanded="true" />
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ASTVisitor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cocu/lang/ast/ASTVisitor.java">
+      <file leaf-file-name="SendFrame.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cocu/runtime/SendFrame.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="23" column="40" selection-start-line="23" selection-start-column="40" selection-end-line="23" selection-end-column="40" />
+              <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SignalHandler.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cocu/runtime/SignalHandler.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Spawned.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cocu/runtime/Spawned.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="0" column="21" selection-start-line="0" selection-start-column="21" selection-end-line="0" selection-end-column="21" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SpecialAST.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cocu/runtime/SpecialAST.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="11" column="1" selection-start-line="11" selection-start-column="1" selection-end-line="11" selection-end-column="1" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SpecialASTVisitor.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cocu/runtime/SpecialASTVisitor.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="15" column="39" selection-start-line="15" selection-start-column="39" selection-end-line="15" selection-end-column="39" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Environment.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cocu/runtime/Environment.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="5" column="10" selection-start-line="5" selection-start-column="10" selection-end-line="5" selection-end-column="10" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="EvalFrame.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cocu/runtime/EvalFrame.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -375,7 +175,20 @@
         <option value="$PROJECT_DIR$/src/cocu/lang/ast/ASTAdapter.java" />
         <option value="$PROJECT_DIR$/src/cocu/lang/MetaEnvironment.java" />
         <option value="$PROJECT_DIR$/src/cocu/lang/Parser.java" />
+        <option value="$PROJECT_DIR$/src/cocu/lang/Evaluator.java" />
+        <option value="$PROJECT_DIR$/src/cocu/Evaluator.java" />
+        <option value="$PROJECT_DIR$/src/cocu/runtime/SpecialASTVisitor.java" />
+        <option value="$PROJECT_DIR$/src/cocu/runtime/SpecialAST.java" />
+        <option value="$PROJECT_DIR$/src/cocu/runtime/SendFrame.java" />
+        <option value="$PROJECT_DIR$/src/cocu/runtime/SignalHandler.java" />
+        <option value="$PROJECT_DIR$/src/cocu/runtime/Closure.java" />
+        <option value="$PROJECT_DIR$/src/cocu/runtime/Envelope.java" />
+        <option value="$PROJECT_DIR$/src/cocu/runtime/EvalFrame.java" />
+        <option value="$PROJECT_DIR$/src/cocu/runtime/Evaluator.java" />
+        <option value="$PROJECT_DIR$/src/cocu/runtime/MacroUtil.java" />
+        <option value="$PROJECT_DIR$/src/cocu/runtime/Environment.java" />
         <option value="$PROJECT_DIR$/src/cocu/Main.java" />
+        <option value="$PROJECT_DIR$/src/cocu/runtime/Spawned.java" />
       </list>
     </option>
   </component>
@@ -446,6 +259,28 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="cocu" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cocu" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cocu" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cocu" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="runtime" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -577,7 +412,11 @@
       <recent name="$PROJECT_DIR$/src/cocu/lang/antlr4" />
       <recent name="$PROJECT_DIR$/libs" />
     </key>
+    <key name="MoveMembersDialog.RECENTS_KEY">
+      <recent name="cocu.runtime.SpecialASTVisitor" />
+    </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="cocu.runtime" />
       <recent name="cocu.lang" />
     </key>
   </component>
@@ -836,7 +675,13 @@
       <option name="project" value="LOCAL" />
       <updated>1434881452687</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Finished first revision of signaling.&#10;&#10;E.g.&#10;&#10;try'&#10;    signal: &quot;stuff&quot;&#10;Catch' |aCtx aSignal|&#10;    (resume: aCtx With: &quot;Resumed with some value&quot;)&#10;    &#10;yields&#10;&#10;&quot;Resumed with some value&quot;&#10;&#10;since tryCatch is an expression&#10;&#10;The use og signal: &quot;stuff&quot; forwards control to the handler in catch, with then resumes (sends back the control) with a supplied value to the try body, which then in return yields the supplied value (&quot;Resumed with some value&quot;).">
+      <created>1434900087903</created>
+      <option name="number" value="00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1434900087903</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -856,13 +701,13 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3294979" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24959569" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24959569" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3294979" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.39958158" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.39958158" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -893,11 +738,12 @@
     <MESSAGE value="Generalized match expressions to include support for integer keys.&#10;- which can be mixed with string keys.&#10;&#10;match: 100&#10;    Case: 2 Then' 1&#10;    Case: &quot;aMsg2&quot; Then' 2&#10;    Case: 100 Then' 200" />
     <MESSAGE value="Started work on signaling." />
     <MESSAGE value="Continued work on signaling." />
-    <option name="LAST_COMMIT_MESSAGE" value="Continued work on signaling." />
+    <MESSAGE value="Finished first revision of signaling.&#10;&#10;E.g.&#10;&#10;try'&#10;    signal: &quot;stuff&quot;&#10;Catch' |aCtx aSignal|&#10;    (resume: aCtx With: &quot;Resumed with some value&quot;)&#10;    &#10;yields&#10;&#10;&quot;Resumed with some value&quot;&#10;&#10;since tryCatch is an expression&#10;&#10;The use og signal: &quot;stuff&quot; forwards control to the handler in catch, with then resumes (sends back the control) with a supplied value to the try body, which then in return yields the supplied value (&quot;Resumed with some value&quot;)." />
+    <option name="LAST_COMMIT_MESSAGE" value="Finished first revision of signaling.&#10;&#10;E.g.&#10;&#10;try'&#10;    signal: &quot;stuff&quot;&#10;Catch' |aCtx aSignal|&#10;    (resume: aCtx With: &quot;Resumed with some value&quot;)&#10;    &#10;yields&#10;&#10;&quot;Resumed with some value&quot;&#10;&#10;since tryCatch is an expression&#10;&#10;The use og signal: &quot;stuff&quot; forwards control to the handler in catch, with then resumes (sends back the control) with a supplied value to the try body, which then in return yields the supplied value (&quot;Resumed with some value&quot;)." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="105" />
+      <option name="time" value="106" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Application">
@@ -946,20 +792,6 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#464#465#0" expanded="true" />
-            <element signature="e#529#530#0" expanded="true" />
-            <element signature="e#2679#2680#0" expanded="true" />
-            <element signature="e#2721#2722#0" expanded="true" />
-            <element signature="e#3071#3072#0" expanded="true" />
-            <element signature="e#3121#3122#0" expanded="true" />
-            <element signature="e#6752#6753#0" expanded="true" />
-            <element signature="e#6828#6829#0" expanded="true" />
-            <element signature="e#6937#6938#0" expanded="true" />
-            <element signature="e#7013#7014#0" expanded="true" />
-            <element signature="e#7992#7993#0" expanded="true" />
-            <element signature="e#8053#8054#0" expanded="true" />
-            <element signature="e#9200#9201#0" expanded="true" />
-            <element signature="e#9259#9260#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1023,20 +855,6 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#464#465#0" expanded="true" />
-            <element signature="e#529#530#0" expanded="true" />
-            <element signature="e#2679#2680#0" expanded="true" />
-            <element signature="e#2721#2722#0" expanded="true" />
-            <element signature="e#3071#3072#0" expanded="true" />
-            <element signature="e#3121#3122#0" expanded="true" />
-            <element signature="e#6752#6753#0" expanded="true" />
-            <element signature="e#6828#6829#0" expanded="true" />
-            <element signature="e#6937#6938#0" expanded="true" />
-            <element signature="e#7013#7014#0" expanded="true" />
-            <element signature="e#7992#7993#0" expanded="true" />
-            <element signature="e#8053#8054#0" expanded="true" />
-            <element signature="e#9200#9201#0" expanded="true" />
-            <element signature="e#9259#9260#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1397,26 +1215,110 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/cocu/Main.java">
+    <entry file="file://$PROJECT_DIR$/src/cocu/runtime/Closure.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.20036764">
-          <caret line="152" column="12" selection-start-line="152" selection-start-column="12" selection-end-line="152" selection-end-column="12" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#464#465#0" expanded="true" />
-            <element signature="e#529#530#0" expanded="true" />
-            <element signature="e#2679#2680#0" expanded="true" />
-            <element signature="e#2721#2722#0" expanded="true" />
-            <element signature="e#3071#3072#0" expanded="true" />
-            <element signature="e#3121#3122#0" expanded="true" />
-            <element signature="e#6752#6753#0" expanded="true" />
-            <element signature="e#6828#6829#0" expanded="true" />
-            <element signature="e#6937#6938#0" expanded="true" />
-            <element signature="e#7013#7014#0" expanded="true" />
-            <element signature="e#7992#7993#0" expanded="true" />
-            <element signature="e#8053#8054#0" expanded="true" />
-            <element signature="e#9200#9201#0" expanded="true" />
-            <element signature="e#9259#9260#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cocu/runtime/Envelope.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cocu/runtime/Environment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="5" column="10" selection-start-line="5" selection-start-column="10" selection-end-line="5" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cocu/runtime/EvalFrame.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cocu/runtime/Evaluator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="282" column="70" selection-start-line="282" selection-start-column="70" selection-end-line="282" selection-end-column="70" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cocu/runtime/SendFrame.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cocu/runtime/SignalHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cocu/runtime/Spawned.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="21" selection-start-line="0" selection-start-column="21" selection-end-line="0" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cocu/runtime/SpecialAST.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="11" column="1" selection-start-line="11" selection-start-column="1" selection-end-line="11" selection-end-column="1" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cocu/runtime/SpecialASTVisitor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="15" column="39" selection-start-line="15" selection-start-column="39" selection-end-line="15" selection-end-column="39" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cocu/runtime/MacroUtil.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="12" column="24" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cocu/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.24816176">
+          <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
