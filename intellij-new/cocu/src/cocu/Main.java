@@ -2,18 +2,15 @@ package cocu;
 
 import cocu.lang.Parser;
 import cocu.lang.ast.AST;
+import cocu.lang.ast.ASTAdapter;
 import cocu.lang.ast.ASTVisitor;
-import javafx.util.Pair;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Main {
     private interface SpecialAST extends AST {
@@ -30,14 +27,16 @@ public class Main {
         T visitReply(AST envelope, AST value);
         T visitMatch(AST target, Map<Object, AST> table);
         T visitSignal(AST astSignal);
-        T visitResumeWith(AST astContext, AST astSignal);
+        T visitResumeWith(AST astContext, AST astValue);
+        T visitTryCatch(AST astBody, Function<Environment, Closure> closureConstructor);
     }
 
     private static class Spawned {
         //public Consumer<Object> responseHandler;
         public EvalFrame frame;
         public Runnable yielder;
-        public Hashtable<String, Object> variables = new Hashtable<>();
+        //public Hashtable<String, Object> variables = new Hashtable<>();
+        public Environment environment = new Environment();
     }
 
     private static class Envelope {
@@ -81,6 +80,56 @@ public class Main {
         //void handleSignal(EvalFrame context, Object signal);
     }
 
+    private static class Closure {
+        public List<String> parameters;
+        public AST body;
+        public Environment environment;
+
+        public Closure(List<String> parameters, AST body, Environment environment) {
+            this.parameters = parameters;
+            this.body = body;
+            this.environment = environment;
+        }
+    }
+
+    private static class Environment {
+        private Environment outer;
+        private Hashtable<String, Object> variables = new Hashtable<>();
+
+        public Environment(Environment outer) {
+            this.outer = outer;
+        }
+
+        public Environment() {
+            this(null);
+        }
+
+        public Object get(String name) {
+            Object value = variables.get(name);
+
+            if(value != null)
+                return value;
+
+            if(outer != null)
+                return outer.get(name);
+
+            return null;
+        }
+
+        public void declare(String name, Object value) {
+
+        }
+
+        public void set(String name, Object value) {
+            if(variables.containsKey(name))
+                variables.put(name, value);
+            else {
+                if(outer != null)
+                    outer.set(name, value);
+            }
+        }
+    }
+
     private static class EvalFrame {
         public EvalFrame outer;
 
@@ -114,11 +163,18 @@ public class Main {
     public static void main(String[] args) {
         Parser parser = new Parser();
         String src = Arrays.asList(
-            "signal: \"An error\""
+            "try'\n" +
+            "    signal: \"stuff\"\n" +
+            "Catch' |aCtx aSignal|\n" +
+            "    (resume: aCtx With: \"some value\")"
+
+            //"signal: \"An error\""
+
             /*"match: 100",
             "    Case: 2 Then' 1",
             "    Case: \"aMsg2\" Then' 2",
             "    Case: 100 Then' 200"*/
+
             /*"var myObject = #{",
             "    var envelope = receive",
             "    reply: envelope, \"A reply\"",
@@ -148,12 +204,7 @@ public class Main {
                     Hashtable<Object, AST> table = new Hashtable<>();
 
                     for (int i = 1; i < asts.size(); i += 2) {
-                        Object key = asts.get(i).accept(new ASTVisitor<Object>() {
-                            @Override
-                            public Object visitProgram(List<AST> expressions) {
-                                return null;
-                            }
-
+                        Object key = asts.get(i).accept(new ASTAdapter<Object>() {
                             @Override
                             public Integer visitInteger(int value) {
                                 return value;
@@ -162,31 +213,6 @@ public class Main {
                             @Override
                             public String visitString(String value) {
                                 return value;
-                            }
-
-                            @Override
-                            public Object visitVariableDefinition(boolean isDeclaration, String id, AST value) {
-                                return null;
-                            }
-
-                            @Override
-                            public Object visitEnvironmentMessage(String selector, List<AST> args) {
-                                return null;
-                            }
-
-                            @Override
-                            public Object visitSpawn(AST environment, List<AST> expressions) {
-                                return null;
-                            }
-
-                            @Override
-                            public Object visitVariableUsage(String id) {
-                                return null;
-                            }
-
-                            @Override
-                            public Object visitMessageSend(AST receiver, String selector, List<AST> args) {
-                                return null;
                             }
                         });
                         AST then = asts.get(i + 1);
@@ -242,6 +268,27 @@ public class Main {
             }
         });
 
+        indexedMacros.put("tryCatch", asts -> new SpecialAST() {
+            @Override
+            public <T> T acceptSpecial(SpecialASTVisitor<? extends T> visitor) {
+                AST tryBody = asts.get(0).accept(new ASTAdapter<AST>() {
+                    @Override
+                    public AST visitClosure(List<String> parameters, AST body) {
+                        return body;
+                    }
+                });
+
+                Function<Environment, Closure> closureConstructor = asts.get(1).accept(new ASTAdapter<Function<Environment, Closure>>() {
+                    @Override
+                    public Function<Environment, Closure> visitClosure(List<String> parameters, AST body) {
+                        return environment -> new Closure(parameters, body, environment);
+                    }
+                });
+
+                return visitor.visitTryCatch(tryBody, closureConstructor);
+            }
+        });
+
         Spawned root = new Spawned();
         root.frame = new EvalFrame(null,
             value -> System.out.println("Result: " + value),
@@ -277,11 +324,17 @@ public class Main {
             public Object visitVariableDefinition(boolean isDeclaration, String id, AST value) {
                 if (value != null) {
                     pushFrame(result -> {
-                        sendFrame.receiver.variables.put(id, result);
+                        if (isDeclaration)
+                            sendFrame.receiver.environment.declare(id, value);
+                        else
+                            sendFrame.receiver.environment.set(id, result);
                         popFrame(result);
                     });
 
                     value.accept(this);
+                } else {
+                    if (isDeclaration)
+                        sendFrame.receiver.environment.declare(id, null);
                 }
 
                 return null;
@@ -289,7 +342,7 @@ public class Main {
 
             @Override
             public Object visitVariableUsage(String id) {
-                Object value = sendFrame.receiver.variables.get(id);
+                Object value = sendFrame.receiver.environment.get(id);
 
                 popFrame(value);
 
@@ -321,6 +374,13 @@ public class Main {
             @Override
             public Object visitString(String value) {
                 popFrame(value);
+
+                return null;
+            }
+
+            @Override
+            public Object visitClosure(List<String> parameters, AST body) {
+                popFrame(new Closure(parameters, body, sendFrame.receiver.environment));
 
                 return null;
             }
@@ -481,13 +541,45 @@ public class Main {
             public Object visitResumeWith(AST astContext, AST astValue) {
                 pushFrame(context -> {
                     pushFrame(value -> {
-                        sendFrame = (SendFrame)context;
+                        sendFrame = (SendFrame) context;
 
                         popFrame(value);
                     });
                     astValue.accept(this);
                 });
                 astContext.accept(this);
+
+                return null;
+            }
+
+            private void apply(List<Object> arguments, Closure closure) {
+                // Allocate inner environment bound to current environment
+                Environment applicationEnvironment = new Environment(closure.environment);
+                pushFrame(result -> {
+                    sendFrame.receiver.environment = applicationEnvironment.outer;
+                    popFrame(result);
+                });
+
+                // Bind arguments to local environment
+                IntStream.range(0, closure.parameters.size()).forEach(x -> {
+                    String name = closure.parameters.get(x);
+                    Object argument = arguments.get(x);
+                    applicationEnvironment.declare(name, argument);
+                });
+                closure.body.accept(this);
+            }
+
+            @Override
+            public Object visitTryCatch(AST astBody, Function<Environment, Closure> closureConstructor) {
+                Closure closure = closureConstructor.apply(sendFrame.receiver.environment);
+
+                BiConsumer<SendFrame, Object> signalHandler = (context, signal) -> {
+                    apply(Arrays.asList(context, signal), closure);
+                };
+
+                sendFrame.receiver.frame =
+                    new EvalFrame(sendFrame.receiver.frame, sendFrame.receiver.frame.responseHandler, new SignalHandler(sendFrame, signalHandler));
+                astBody.accept(this);
 
                 return null;
             }

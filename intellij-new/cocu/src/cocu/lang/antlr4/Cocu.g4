@@ -28,11 +28,14 @@ grouping: PAR_OP (expression)+ PAR_CL;
 multiKeyMessage: multiKeyMessageHead multiKeyMessageTail*;
 multiKeyMessageHead: ID_UNCAP multiKeyMessageModifier multiKeyMessageArgs;
 multiKeyMessageTail: ID_CAP multiKeyMessageModifier multiKeyMessageArgs;
-multiKeyMessageModifier: (modifier=COLON|modifier=SINGLE_QUOTE behaviorParams);
+multiKeyMessageModifier: modifier=(COLON|SINGLE_QUOTE);
 multiKeyMessageArgs: (multiKeyMessageArg (COMMA multiKeyMessageArg)*)?;
-multiKeyMessageArg: 
-    selfSingleKeyMessage |
-    multiKeyMessageArgReceiver multiKeyMessageArgChain* multiKeyMessageArgEnd?;
+multiKeyMessageArg:
+    behaviorParams
+    (
+        selfSingleKeyMessage |
+        multiKeyMessageArgReceiver multiKeyMessageArgChain* multiKeyMessageArgEnd?
+    );
 multiKeyMessageArgReceiver: atom;
 multiKeyMessageArgChain: DOT unaryMessage | slotAccess | indexAccess;
 multiKeyMessageArgEnd:

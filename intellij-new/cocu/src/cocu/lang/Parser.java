@@ -106,6 +106,21 @@ public class Parser {
             }
 
             @Override
+            public AST visitSingleKeyMessage(@NotNull CocuParser.SingleKeyMessageContext ctx) {
+                String selector = ctx.ID_UNCAP().getText();
+                boolean asClosure = ctx.multiKeyMessageModifier().modifier.getType() == CocuLexer.SINGLE_QUOTE;
+
+                List<AST> args = Arrays.asList(getMultiMessageArgCtx(asClosure, ctx.multiKeyMessageArg()));
+
+                return new AST() {
+                    @Override
+                    public <T> T accept(ASTVisitor<? extends T> visitor) {
+                        return visitor.visitEnvironmentMessage(selector, args);
+                    }
+                };
+            }
+
+            @Override
             public AST visitSelfMultiKeyMessage(@NotNull CocuParser.SelfMultiKeyMessageContext ctx) {
                 String selector =
                     Stream.concat(
@@ -115,8 +130,8 @@ public class Parser {
 
                 List<AST> args =
                     Stream.concat(
-                        getMultiMessageArgCtxs(ctx.multiKeyMessage().multiKeyMessageHead().multiKeyMessageArgs()),
-                        ctx.multiKeyMessage().multiKeyMessageTail().stream().flatMap(x -> getMultiMessageArgCtxs(x.multiKeyMessageArgs()))
+                        getMultiMessageArgCtxs(ctx.multiKeyMessage().multiKeyMessageHead().multiKeyMessageModifier(), ctx.multiKeyMessage().multiKeyMessageHead().multiKeyMessageArgs()),
+                        ctx.multiKeyMessage().multiKeyMessageTail().stream().flatMap(x -> getMultiMessageArgCtxs(x.multiKeyMessageModifier(), x.multiKeyMessageArgs()))
                     ).collect(Collectors.toList());
 
                 return new AST() {
@@ -127,20 +142,34 @@ public class Parser {
                 };
             }
 
-            private Stream<AST> getMultiMessageArgCtxs(CocuParser.MultiKeyMessageArgsContext ctx) {
-                return ctx.multiKeyMessageArg().stream().map(x -> getMultiMessageArgCtx(x));
+            private Stream<AST> getMultiMessageArgCtxs(CocuParser.MultiKeyMessageModifierContext modifierCtx, CocuParser.MultiKeyMessageArgsContext argsCtx) {
+                boolean asClosure = modifierCtx.modifier.getType() == CocuLexer.SINGLE_QUOTE;
+                return argsCtx.multiKeyMessageArg().stream().map(x -> getMultiMessageArgCtx(asClosure, x));
             }
 
-            private AST getMultiMessageArgCtx(CocuParser.MultiKeyMessageArgContext ctx) {
+            private AST getMultiMessageArgCtx(boolean asClosure, CocuParser.MultiKeyMessageArgContext ctx) {
+                List<String> parameters = ctx.behaviorParams().id().stream().map(x -> x.getText()).collect(Collectors.toList());
+
+                AST argument;
                 if (ctx.selfSingleKeyMessage() != null)
-                    return ctx.selfSingleKeyMessage().accept(this);
+                    argument = ctx.selfSingleKeyMessage().accept(this);
                 else {
                     AST receiver = ctx.multiKeyMessageArgReceiver().accept(this);
 
-                    // Process args
+                    // Process chain
 
-                    return receiver;
+                    argument = receiver;
                 }
+
+                if(asClosure) {
+                    return new AST() {
+                        @Override
+                        public <T> T accept(ASTVisitor<? extends T> visitor) {
+                            return visitor.visitClosure(parameters, argument);
+                        }
+                    };
+                } else
+                    return argument;
             }
 
             @Override

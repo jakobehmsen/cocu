@@ -18,4 +18,6 @@ public interface ASTVisitor<T> {
     T visitVariableUsage(String id);
 
     T visitMessageSend(AST receiver, String selector, List<AST> args);
+
+    T visitClosure(List<String> parameters, AST body);
 }
